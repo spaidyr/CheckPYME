@@ -12,7 +12,7 @@ backup/
 sqlite/*.db
 
 # GIT
-.gitignore
+*.gitignore
 
 # Distribution / packaging
 .Python

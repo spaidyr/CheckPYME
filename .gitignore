@@ -11,6 +11,9 @@ client*/
 backup/
 sqlite/*.db
 
+# GIT
+.gitignore
+
 # Distribution / packaging
 .Python
 build/

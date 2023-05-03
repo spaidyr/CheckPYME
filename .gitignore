@@ -10,7 +10,6 @@ __pycache__/
 client*/
 backup/
 sqlite/*.db
-.NOTES
 
 # Distribution / packaging
 .Python

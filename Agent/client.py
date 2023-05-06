@@ -9,6 +9,9 @@ import json
 
 
 def start_client():
+
+    # Socket Server
+
     host = '127.0.0.1'
     port = 6605
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

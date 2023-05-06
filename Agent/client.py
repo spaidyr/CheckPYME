@@ -5,8 +5,7 @@ import time
 import platform
 import threading
 import json
-
-
+from cryptography.fernet import Fernet
 
 def start_client():
 
@@ -15,7 +14,7 @@ def start_client():
     host = '127.0.0.1'
     port = 6605
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    token = load_token()
+    token = load_encrypted_token()
     hostname = platform.node()
 
     # Intenta conectarse al servidor hasta que tenga éxito
@@ -28,13 +27,6 @@ def start_client():
             time.sleep(5)
 
     handle_server_response(client_socket, token, hostname)
-
-def load_token():
-    if os.path.exists('token.txt'):
-        with open('token.txt', 'r') as file:
-            token = file.read().strip()
-            return token
-    return None
 
 def listen_for_server():
     host = '127.0.0.1'
@@ -53,16 +45,6 @@ def handle_server_request(server_socket):
         validate_token(server_socket)
     server_socket.close()
 
-def validate_token(server_socket):
-    token = load_token()
-    print(f"Validando token {token}")
-    server_socket.send(token.encode('utf-8'))
-    response = server_socket.recv(1024).decode('utf-8')
-    if response == "Validated":
-        print('OK, the Token is ',response)
-    else:
-        print(response)
-
 def handle_server_response(client_socket, token, hostname):
     if token:
         client_socket.send(f"{token}|{hostname}".encode('utf-8'))
@@ -76,16 +58,61 @@ def handle_server_response(client_socket, token, hostname):
     elif response == 'False':
         print('El token proporcionado no coincide con el hostname')
     else:
-        store_token(response)
+        save_encrypted_token(response)
         print(f'Token actualizado: {response}')
 
     load_modules()
 
-#         # Enviar archivo JSON al servidor
-#         with open(f'{log_path}', 'rb') as file:
-#             client_socket.sendfile(file)
-
     client_socket.close()
+
+# Genera una clave y guárdala en un archivo seguro (solo la primera vez, luego reutiliza la misma clave)
+def generate_key():
+    key = Fernet.generate_key()
+    with open("key.key", "wb") as key_file:
+        key_file.write(key)
+
+# Carga la clave desde el archivo
+def load_key():
+    with open("key.key", "rb") as key_file:
+        key = key_file.read()
+    return key
+
+# Guarda el token cifrado en el archivo 'token.txt'
+def save_encrypted_token(token):
+    if not os.path.exists("key.key"):
+        generate_key()
+    key = load_key()
+    cipher_suite = Fernet(key)
+    encrypted_token = cipher_suite.encrypt(token.encode())
+
+    with open("token.txt", "wb") as file:
+        file.write(encrypted_token)
+
+# Carga y descifra el token desde el archivo 'token.txt'
+def load_encrypted_token():
+    if os.path.exists("token.txt"):
+        key = load_key()
+        cipher_suite = Fernet(key)
+
+        with open("token.txt", "rb") as file:
+            encrypted_token = file.read()
+            token = cipher_suite.decrypt(encrypted_token).decode()
+            return token
+    return None
+
+def validate_token(server_socket):
+    token = load_encrypted_token()
+    print(f"Validando token {token}")
+    server_socket.send(token.encode('utf-8'))
+    response = server_socket.recv(1024).decode('utf-8')
+    if response == "Validated":
+        print('OK, the Token is ',response)
+    else:
+        print(response)
+
+def get_module_files(directory):
+    with os.scandir(directory) as entries:
+        return tuple(entry.name for entry in entries if entry.is_file() and entry.name.endswith('.py'))
 
 def load_modules():
     module_directory = 'modules'
@@ -101,14 +128,6 @@ def load_modules():
              json.dump(log_file, file, ensure_ascii=False)
              file.write('\n')
 
-def store_token(token):
-    with open('token.txt', 'w') as file:
-        file.write(token)
-
-def get_module_files(directory):
-    with os.scandir(directory) as entries:
-        return tuple(entry.name for entry in entries if entry.is_file() and entry.name.endswith('.py'))
-
 def import_modules(module_directory, module_files):
     imported_modules = []
     for module_file in module_files:
@@ -123,5 +142,3 @@ def import_modules(module_directory, module_files):
 if __name__ == '__main__':
     start_client()
     threading.Thread(target=listen_for_server).start()
-    
-    

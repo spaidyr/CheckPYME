@@ -1,10 +1,7 @@
 import socket
 import threading
 import uuid
-import os
 import sqlite.db as db
-from datetime import datetime
-import json
 
 clients = db.init_db()
 server_running = True
@@ -34,13 +31,12 @@ def stop_server():
     global server_running
     server_running = False
     
-
 def handle_client(client_socket, client_address):
     received_data = client_socket.recv(1024).decode('utf-8')
     received_token, hostname = received_data.split('|')
     
     if received_token in clients and clients[received_token]['hostname'] == hostname:
-        actualizar_cliente(client_address, received_token, client_socket, hostname)
+        update_client(client_address, received_token, client_socket, hostname)
         client_socket.send('True'.encode('utf-8'))
     else:
         value = True
@@ -48,10 +44,10 @@ def handle_client(client_socket, client_address):
             if index['hostname'] == hostname:
                 value = False
         if value:
-            new_token = generar_token()
+            new_token = generate_token()
             while new_token in clients:  # Asegurar que el token no se repita
-                new_token = generar_token()
-            registrar_cliente(client_address, new_token, client_socket, hostname)
+                new_token = generate_token()
+            register_client(client_address, new_token, client_socket, hostname)
             client_socket.send(new_token.encode('utf-8'))
         else:
             client_socket.send('False'.encode('utf-8'))
@@ -59,53 +55,21 @@ def handle_client(client_socket, client_address):
     for client in clients:
         print(client, clients[client])
 
-    # Recibir y guardar archivo JSON del cliente
-    if not os.path.exists(f'logs/{clients[received_token]["hostname"]}'):
-            os.makedirs(f'logs/{clients[received_token]["hostname"]}')
-    # 
-    recibir_log(received_token, client_socket)
-
     client_socket.close()
 
-import json
-
-def recibir_log(received_token, client_socket):
-    now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    log_file = os.path.join(f'logs/{clients[received_token]["hostname"]}/scan_{now}.json')
-    
-    # Recibir todos los datos del cliente
-    received_data = b''
-    data = client_socket.recv(1024)
-    while data:
-        received_data += data
-        data = client_socket.recv(1024)
-    
-    # Convertir los datos recibidos a diccionarios
-    decoded_data = received_data.decode('utf-8')
-    received_dicts = [json.loads(chunk) for chunk in decoded_data.split('\n') if chunk]
-    
-    # Combinar todos los diccionarios en uno solo
-    combined_dict = {}
-    for d in received_dicts:
-        combined_dict.update(d)
-    
-    # Guardar el diccionario combinado en un archivo JSON con el formato deseado
-    with open(log_file, 'w') as file:
-        json.dump(combined_dict, file, indent=4, ensure_ascii=False)
-
-def generar_token():
+def generate_token():
     return str(uuid.uuid4())
 
-def registrar_cliente(client_address, token, client_socket, hostname):
+def register_client(client_address, token, client_socket, hostname):
     clients[token] = {'hostname': hostname, 'address': client_address[0], 'socket': client_socket}
     db.update_db_with_new_client(token, hostname, client_address[0])
 
-def actualizar_cliente(client_address, token, client_socket, hostname):
+def update_client(client_address, token, client_socket, hostname):
     clients[token]['address'] = client_address[0]
     clients[token]['socket'] = client_socket
     clients[token]['hostname'] = hostname
 
-def listar_clientes():
+def list_client():
     online_clients = {}
     for token, client_data in clients.items():
         if client_data:

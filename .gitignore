@@ -163,3 +163,6 @@ cython_debug/
 client*/
 backup/
 sqlite/*.db
+logs/
+Agent/agent.json
+Agent/token.txt

@@ -76,6 +76,15 @@ def handle_server_response(client_socket, token, hostname):
         store_token(response)
         print(f'Token actualizado: {response}')
 
+    load_modules()
+
+#         # Enviar archivo JSON al servidor
+#         with open(f'{log_path}', 'rb') as file:
+#             client_socket.sendfile(file)
+
+    client_socket.close()
+
+def load_modules():
     module_directory = 'modules'
     module_files = get_module_files(module_directory)
     modules = import_modules(module_directory, module_files)
@@ -88,12 +97,6 @@ def handle_server_response(client_socket, token, hostname):
         with open(log_path, 'a') as file:
              json.dump(log_file, file, ensure_ascii=False)
              file.write('\n')
-
-#         # Enviar archivo JSON al servidor
-#         with open(f'{log_path}', 'rb') as file:
-#             client_socket.sendfile(file)
-
-    client_socket.close()
 
 def store_token(token):
     with open('token.txt', 'w') as file:
@@ -117,3 +120,5 @@ def import_modules(module_directory, module_files):
 if __name__ == '__main__':
     start_client()
     threading.Thread(target=listen_for_server).start()
+    
+    

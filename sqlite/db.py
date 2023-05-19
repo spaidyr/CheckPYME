@@ -36,7 +36,13 @@ def load_clients_from_db(conn):
     
     return clients
 
-def update_db_with_new_client(token, hostname, address):
+def load_client_addresses(conn):
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM clientAddress")
+    addresses = cursor.fetchall()
+    return addresses
+
+def register_db_with_new_client(token, hostname, address):
     conn = sqlite3.connect('sqlite/CheckPYME.db')
     cursor = conn.cursor()
     cursor.execute("INSERT INTO agents (token, hostname) VALUES (?, ?)", (token, hostname))
@@ -44,9 +50,12 @@ def update_db_with_new_client(token, hostname, address):
     conn.commit()
     conn.close()
 
-def load_client_addresses(conn):
+def update_client_address_in_db(hostname, new_address):
+    conn = sqlite3.connect('sqlite/CheckPYME.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM clientAddress")
-    addresses = cursor.fetchall()
-    return addresses
+
+    cursor.execute("UPDATE clientAddress SET address = ? WHERE hostname = ?", (new_address, hostname))
+
+    conn.commit()
+    conn.close()
 

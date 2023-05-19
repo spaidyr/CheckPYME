@@ -6,14 +6,30 @@ import platform
 import threading
 import json
 from cryptography.fernet import Fernet
+import base64
+import ssl
 
-def start_client():
+def read_config():
+    with open("config.json", "r") as f:
+        return json.load(f)
+
+def start_client(config):
 
     # Socket Server
 
-    host = '127.0.0.1'
-    port = 6605
+    host = config["server_ip"]
+    port = int(config["server_port"])
+    # Crea un socket de cliente no seguro
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Envuelve el socket del cliente con SSL
+    client_socket = ssl.wrap_socket(
+        client_socket, 
+        certfile='./certs/client.crt', 
+        keyfile='./certs/client.key',
+        ca_certs='./certs/ca.crt',
+        cert_reqs=ssl.CERT_REQUIRED
+        )
     token = load_encrypted_token()
     hostname = platform.node()
 
@@ -28,10 +44,20 @@ def start_client():
 
     handle_server_response(client_socket, token, hostname)
 
-def listen_for_server():
-    host = '127.0.0.1'
-    port = 6610
+def listen_for_server(config):
+
+    host = socket.gethostbyname(socket.gethostname())
+    port = int(config["client_port"])
     listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Envuelve el socket de escucha con SSL
+    listening_socket = ssl.wrap_socket(
+        listening_socket,
+        certfile='./certs/client.crt', 
+        keyfile='./certs/client.key',
+        ca_certs='./certs/ca.crt',
+        cert_reqs=ssl.CERT_REQUIRED,
+        server_side=True
+        )
     listening_socket.bind((host, port))
     listening_socket.listen()
 
@@ -53,15 +79,15 @@ def handle_server_response(client_socket, token, hostname):
 
     response = client_socket.recv(1024).decode('utf-8')
 
-    if response == 'True':
-        print('Token confirmado por el servidor')
-    elif response == 'False':
+    if response == 'False':
         print('El token proporcionado no coincide con el hostname')
     else:
-        save_encrypted_token(response)
-        print(f'Token actualizado: {response}')
-
-    load_modules()
+        if response == 'True':
+            print('Token confirmado por el servidor')
+        else:
+            store_encrypted_token(response)
+            print(f'Token actualizado: {response}')
+        load_modules()
 
     client_socket.close()
 
@@ -73,35 +99,42 @@ def generate_key():
 
 # Carga la clave desde el archivo
 def load_key():
-    with open("key.key", "rb") as key_file:
-        key = key_file.read()
-    return key
-
-# Guarda el token cifrado en el archivo 'token.txt'
-def save_encrypted_token(token):
     if not os.path.exists("key.key"):
         generate_key()
-    key = load_key()
-    cipher_suite = Fernet(key)
-    encrypted_token = cipher_suite.encrypt(token.encode())
+    with open("key.key", "rb") as key_file:
+        return key_file.read()
 
-    with open("token.txt", "wb") as file:
-        file.write(encrypted_token)
+def encrypt_token(token):
+    key = load_key()
+    f = Fernet(key)
+    return f.encrypt(token.encode())
+
+def decrypt_token(encrypted_token):
+    key = load_key()
+    f = Fernet(key)
+    return f.decrypt(encrypted_token).decode()
+
+# Guarda el token cifrado en el archivo 'token.txt'
+def store_encrypted_token(token):
+    encrypted_token = encrypt_token(token)
+    base64_encrypted_token = base64.b64encode(encrypted_token)
+    with open('token.bin', 'wb') as file:
+        file.write(base64_encrypted_token)
 
 # Carga y descifra el token desde el archivo 'token.txt'
 def load_encrypted_token():
-    if os.path.exists("token.txt"):
-        key = load_key()
-        cipher_suite = Fernet(key)
-
-        with open("token.txt", "rb") as file:
-            encrypted_token = file.read()
-            token = cipher_suite.decrypt(encrypted_token).decode()
-            return token
+    if os.path.exists('token.bin'):
+        with open('token.bin', 'rb') as file:
+            base64_encrypted_token = file.read()
+            encrypted_token = base64.b64decode(base64_encrypted_token)
+            return decrypt_token(encrypted_token)
     return None
 
 def validate_token(server_socket):
     token = load_encrypted_token()
+    if token is None:
+        print("No se encontró el token")
+        return
     print(f"Validando token {token}")
     server_socket.send(token.encode('utf-8'))
     response = server_socket.recv(1024).decode('utf-8')
@@ -140,5 +173,6 @@ def import_modules(module_directory, module_files):
 
 
 if __name__ == '__main__':
-    start_client()
-    threading.Thread(target=listen_for_server).start()
+    config = read_config()
+    start_client(config)
+    threading.Thread(target=listen_for_server(config)).start()

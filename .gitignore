@@ -163,6 +163,11 @@ cython_debug/
 client*/
 backup/
 sqlite/*.db
-logs/
+logs/*
 Agent/agent.json
-Agent/token.txt
+Agent/token.bin
+Agent/key.key
+Agent/certs/*.crt
+Agent/certs/*.key
+certs/*/*.crt
+certs/*/*.key

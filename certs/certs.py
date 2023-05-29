@@ -33,7 +33,7 @@ def generate_ca(config):
         .public_key(ca_private_key.public_key())
         .serial_number(x509.random_serial_number())
         .not_valid_before(datetime.utcnow())
-        .not_valid_after(datetime.utcnow() + timedelta(days=config["ca"]["validity_days"]))
+        .not_valid_after(datetime.utcnow() + timedelta(days=int(config["ca"]["validity_days"])))
         .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
         .sign(ca_private_key, hashes.SHA256())
     )
@@ -44,6 +44,10 @@ def generate_ca(config):
 
     # Guarda el certificado de la CA en un archivo
     with open(".\certs\ca\ca.crt", "wb") as f:
+        f.write(ca_cert.public_bytes(Encoding.PEM))
+    
+    # Guarda el certificado de la CA en el cliente
+    with open(".\Agent\certs\ca.crt", "wb") as f:
         f.write(ca_cert.public_bytes(Encoding.PEM))
 
     return ca_private_key, ca_cert
@@ -69,7 +73,7 @@ def generate_client_key_cert(ca_private_key, ca_cert, config):
         .public_key(client_private_key.public_key())
         .serial_number(x509.random_serial_number())
         .not_valid_before(datetime.utcnow())
-        .not_valid_after(datetime.utcnow() + timedelta(days=config["client"]["validity_days"]))
+        .not_valid_after(datetime.utcnow() + timedelta(days=int(config["client"]["validity_days"])))
         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
         .sign(ca_private_key, hashes.SHA256())
     )
@@ -78,10 +82,18 @@ def generate_client_key_cert(ca_private_key, ca_cert, config):
     with open(".\certs\client\client.key", "wb") as f:
         f.write(client_private_key.private_bytes(Encoding.PEM, PrivateFormat.TraditionalOpenSSL, NoEncryption()))
 
+    # Guarda la clave privada del cliente en un archivo
+    with open(".\Agent\certs\client.key", "wb") as f:
+        f.write(client_private_key.private_bytes(Encoding.PEM, PrivateFormat.TraditionalOpenSSL, NoEncryption()))
+
     # Guarda el certificado del cliente en un archivo
     with open(".\certs\client\client.crt", "wb") as f:
         f.write(client_cert.public_bytes(Encoding.PEM))
 
+    # Guarda el certificado del cliente en un archivo
+    with open(".\Agent\certs\client.crt", "wb") as f:
+        f.write(client_cert.public_bytes(Encoding.PEM))
+    
     return client_private_key, client_cert
 
 def generate_server_key_cert(ca_private_key, ca_cert, config):
@@ -104,7 +116,7 @@ def generate_server_key_cert(ca_private_key, ca_cert, config):
         .public_key(server_private_key.public_key())
         .serial_number(x509.random_serial_number())
         .not_valid_before(datetime.utcnow())
-        .not_valid_after(datetime.utcnow() + timedelta(days=config["server"]["validity_days"]))
+        .not_valid_after(datetime.utcnow() + timedelta(days=int(config["server"]["validity_days"])))
         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
         .sign(ca_private_key, hashes.SHA256())
     )

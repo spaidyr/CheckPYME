@@ -67,8 +67,17 @@ def listen_for_server(config):
 
 def handle_server_request(server_socket):
     received_data = server_socket.recv(1024).decode('utf-8')
-    if received_data == "validate_token":
+    if received_data == "Hello":
         validate_token(server_socket)
+    elif received_data == "exec_modules":
+        load_modules()
+        server_socket.send('Success'.encode('utf-8'))
+    elif received_data == "update_modules":
+        response = server_socket.recv(10240).decode('utf-8')
+        if response.startswith('UPDATE_MODULES'):
+            new_modules_data = response.split('UPDATE_MODULES')[1]
+            update_modules(new_modules_data)
+        server_socket.send('Success'.encode('utf-8'))
     server_socket.close()
 
 def handle_server_response(client_socket, token, hostname):
@@ -87,6 +96,12 @@ def handle_server_response(client_socket, token, hostname):
         else:
             store_encrypted_token(response)
             print(f'Token actualizado: {response}')
+    
+    response = client_socket.recv(10240).decode('utf-8')
+    if response.startswith('UPDATE_MODULES'):
+        new_modules_data = response.split('UPDATE_MODULES')[1]
+        update_modules(new_modules_data)
+    else:
         load_modules()
 
     client_socket.close()
@@ -138,8 +153,8 @@ def validate_token(server_socket):
     print(f"Validando token {token}")
     server_socket.send(token.encode('utf-8'))
     response = server_socket.recv(1024).decode('utf-8')
-    if response == "Validated":
-        print('OK, the Token is ',response)
+    if response == "Authorized":
+        print(response, ' OK')
     else:
         print(response)
 
@@ -171,6 +186,16 @@ def import_modules(module_directory, module_files):
 
     return imported_modules
 
+def update_modules(new_modules_data):
+    # Convertimos los datos recibidos a diccionario
+    new_modules = json.loads(new_modules_data)
+
+    for module_name, module_content in new_modules.items():
+        # Guardamos el nuevo módulo, reemplazando el antiguo
+        with open(f'./modules/{module_name}', 'w') as f:
+            f.write(module_content)
+
+    print("Módulos actualizados exitosamente")
 
 if __name__ == '__main__':
     config = read_config()

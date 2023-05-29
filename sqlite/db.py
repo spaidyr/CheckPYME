@@ -59,3 +59,14 @@ def update_client_address_in_db(hostname, new_address):
     conn.commit()
     conn.close()
 
+def delete_client(hostname):
+    # Conéctate a la base de datos
+    conn = sqlite3.connect('sqlite/CheckPYME.db')
+    cursor = conn.cursor()
+    # Elimina el hostname de las tablas de la base de datos
+    cursor.execute("DELETE FROM agents WHERE hostname = ?", (hostname,))
+    cursor.execute("DELETE FROM clientAddress WHERE hostname = ?", (hostname,))
+
+    # Commit y cierra la conexión
+    conn.commit()
+    conn.close()

@@ -1,0 +1,7 @@
+list_clients        --> Listar clientes
+exec_modules        --> Ejecutar todos los modulos
+update_modules      --> Actualizar modulos
+Hello               --> Solicitud de Validación
+Success             --> Operacion realizada con exito
+Authorized          --> Cliente Validado
+Unauthorized        --> Cliente NO Validado

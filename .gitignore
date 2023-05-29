@@ -161,13 +161,9 @@ cython_debug/
 
 # CheckPYME path
 client*/
-backup/
 sqlite/*.db
-logs/*
-Agent/agent.json
-Agent/token.bin
-Agent/key.key
-Agent/certs/*.crt
-Agent/certs/*.key
 certs/*/*.crt
 certs/*/*.key
+Agent/certs/*
+Agent/agent.json
+Agent/modules/*.py

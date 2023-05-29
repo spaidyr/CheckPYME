@@ -1,8 +1,11 @@
 import handler.socket_handler as socket_handler
 import certs.certs as certs
-import cli
+from PyQt5.QtWidgets import QApplication
+from App.MyApp import MyApp
+from App.CertificatesAlert import CertificatesAlert
 import threading
 import os
+import sys
 
 def check_certificates():
 
@@ -27,22 +30,27 @@ def check_certificates():
 
     return ca_certs, client_certs, server_certs
 
-def main():
+def run_app():
+    app = QApplication(sys.argv)
+    ex = MyApp()
+    ex.show()
+    sys.exit(app.exec_())
 
+def main():
+    
+    app = QApplication(sys.argv)
+    
     check_ca , check_client, check_server = check_certificates()
 
     if not check_ca & check_client & check_server:
-        config = certs.read_config()
-        ca_private_key, ca_cert = certs.generate_ca(config)
+        alert = CertificatesAlert()
+        alert.exec_()
+    else:
+        server_thread = threading.Thread(target=socket_handler.start_server).start()
     
-        if ca_private_key and ca_cert:
-            client_private_key, client_cert = certs.generate_client_key_cert(ca_private_key, ca_cert, config)
-            server_private_key, server_cert = certs.generate_server_key_cert(ca_private_key, ca_cert, config)
-
-    server_thread = threading.Thread(target=socket_handler.start_server).start()
-
-    cli_thread = threading.Thread(target=cli.main)
-    cli_thread.start()
+    ex = MyApp()
+    ex.show()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
     main()

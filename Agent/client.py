@@ -8,6 +8,7 @@ import json
 from cryptography.fernet import Fernet
 import base64
 import ssl
+import shutil
 
 def read_config():
     with open("config.json", "r") as f:
@@ -167,6 +168,7 @@ def load_modules():
     module_files = get_module_files(module_directory)
     modules = import_modules(module_directory, module_files)
     for module in modules:
+        importlib.reload(module)  # Aquí se recarga el módulo
         module_name = module.__name__
         module_path, module_class = module_name.split('.')
         log_file = getattr(module, module_class)().log_file
@@ -175,6 +177,8 @@ def load_modules():
         with open(log_path, 'a') as file:
              json.dump(log_file, file, ensure_ascii=False)
              file.write('\n')
+
+imported_modules = set()
 
 def import_modules(module_directory, module_files):
     imported_modules = []
@@ -189,6 +193,18 @@ def import_modules(module_directory, module_files):
 def update_modules(new_modules_data):
     # Convertimos los datos recibidos a diccionario
     new_modules = json.loads(new_modules_data)
+
+    # Borrar todos los archivos en el directorio de módulos
+    module_directory = './modules'
+    for filename in os.listdir(module_directory):
+        file_path = os.path.join(module_directory, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')
 
     for module_name, module_content in new_modules.items():
         # Guardamos el nuevo módulo, reemplazando el antiguo

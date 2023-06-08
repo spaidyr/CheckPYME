@@ -9,10 +9,6 @@ class PasswordPolicies():
     def __init__(self):
         result = {}
         name = 'PasswordPolicies'
-<<<<<<< HEAD
-        result = {'id':str(uuid.uuid4())}
-=======
->>>>>>> functional
         result['module_name'] = name
         result['hostname'] = platform.node()
         madrid_tz = pytz.timezone('Europe/Madrid')

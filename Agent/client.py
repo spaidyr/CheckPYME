@@ -6,16 +6,11 @@ import platform
 import threading
 import json
 from elasticsearch import Elasticsearch
-
 from cryptography.fernet import Fernet
 import base64
 import ssl
 import shutil
-<<<<<<< HEAD
-=======
 import os
-
->>>>>>> functional
 
 def read_config():
     with open("config.json", "r") as f:

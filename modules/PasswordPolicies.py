@@ -1,18 +1,22 @@
 import subprocess
 from datetime import datetime
-import uuid
 import platform
 import re
+import pytz
 
 class PasswordPolicies():
 
     def __init__(self):
         result = {}
         name = 'PasswordPolicies'
+<<<<<<< HEAD
         result = {'id':str(uuid.uuid4())}
+=======
+>>>>>>> functional
         result['module_name'] = name
         result['hostname'] = platform.node()
-        result['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        madrid_tz = pytz.timezone('Europe/Madrid')
+        result['timestamp'] = datetime.now(madrid_tz).isoformat()
         self.log_file = self.check(result)
 
     def check(self, result):

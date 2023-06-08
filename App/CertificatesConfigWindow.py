@@ -1,6 +1,7 @@
 import json
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QTableWidget, QTableWidgetItem, QLineEdit, QMessageBox
-from handler.function import generate_certificates
+from handler.function import generate_certificates, copy_file as copy_cert
+import re
 
 class CertificatesConfigWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -12,7 +13,7 @@ class CertificatesConfigWindow(QMainWindow):
 
         # Set window title and size
         self.setWindowTitle("Configure Certificates")
-        self.setGeometry(1000, 100, 320, 750)
+        self.setGeometry(1000, 100, 320, 820)
 
         # Create layout
         self.layout = QVBoxLayout()
@@ -43,7 +44,10 @@ class CertificatesConfigWindow(QMainWindow):
 
         for i, (key, value) in enumerate(config.items()):
             table.setItem(i, 0, QTableWidgetItem(key))
-            lineEdit = QLineEdit(str(value))
+            if isinstance(value, str) and re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', value):
+                lineEdit = QLineEdit(value)
+            else:
+                lineEdit = QLineEdit(str(value))
             table.setCellWidget(i, 1, lineEdit)
 
         table.resizeColumnsToContents()
@@ -63,5 +67,11 @@ class CertificatesConfigWindow(QMainWindow):
 
         if reply == QMessageBox.Yes:
             generate_certificates()
+            copy_cert("./certs/ca/ca.crt", "C:\\Elastic\\Elasticsearch\\8.8.0\\elasticsearch-8.8.0\\config\ca.crt")
+            copy_cert("./certs/ca/ca.crt", "C:\\Elastic\\Kibana\\8.8.0\\kibana-8.8.0\\config\ca.crt")
+            copy_cert("./certs/server/server.crt", "C:\\Elastic\\Elasticsearch\\8.8.0\\elasticsearch-8.8.0\\config\server.crt")
+            copy_cert("./certs/server/server.crt", "C:\\Elastic\\Kibana\\8.8.0\\kibana-8.8.0\\config\server.crt")
+            copy_cert("./certs/server/server.key", "C:\\Elastic\\Elasticsearch\\8.8.0\\elasticsearch-8.8.0\\config\server.key")
+            copy_cert("./certs/server/server.key", "C:\\Elastic\\Kibana\\8.8.0\\kibana-8.8.0\\config\server.key")
 
         self.close()

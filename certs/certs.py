@@ -1,4 +1,5 @@
 import json
+from ipaddress import IPv4Address
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
@@ -8,6 +9,7 @@ from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.hazmat.primitives.serialization import PrivateFormat
 from cryptography.hazmat.primitives.serialization import NoEncryption
 from datetime import datetime, timedelta
+
 
 def read_config():
     with open(".\certs\config.json", "r") as f:
@@ -66,6 +68,10 @@ def generate_client_key_cert(ca_private_key, ca_cert, config):
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, config["client"]["organization_name"]),
         x509.NameAttribute(NameOID.COMMON_NAME, config["client"]["common_name"]),
     ])
+
+    # Agrega la IP a los nombres alternativos del sujeto
+    san = x509.SubjectAlternativeName([x509.IPAddress(IPv4Address(config["server"]["san_ip"]))])
+
     client_cert = (
         x509.CertificateBuilder()
         .subject_name(client_subject)
@@ -75,6 +81,7 @@ def generate_client_key_cert(ca_private_key, ca_cert, config):
         .not_valid_before(datetime.utcnow())
         .not_valid_after(datetime.utcnow() + timedelta(days=int(config["client"]["validity_days"])))
         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
+        .add_extension(san, critical=False)  # Agrega la extensión SAN al certificado
         .sign(ca_private_key, hashes.SHA256())
     )
 
@@ -109,6 +116,13 @@ def generate_server_key_cert(ca_private_key, ca_cert, config):
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, config["server"]["organization_name"]),
         x509.NameAttribute(NameOID.COMMON_NAME, config["server"]["common_name"]),
     ])
+
+    # Agrega la IP a los nombres alternativos del sujeto
+    san = x509.SubjectAlternativeName([
+        x509.IPAddress(IPv4Address(config["server"]["san_ip"])),
+        x509.IPAddress(IPv4Address('127.0.0.1'))
+        ])
+
     server_cert = (
         x509.CertificateBuilder()
         .subject_name(server_subject)
@@ -118,6 +132,7 @@ def generate_server_key_cert(ca_private_key, ca_cert, config):
         .not_valid_before(datetime.utcnow())
         .not_valid_after(datetime.utcnow() + timedelta(days=int(config["server"]["validity_days"])))
         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
+        .add_extension(san, critical=False)  # Agrega la extensión SAN al certificado
         .sign(ca_private_key, hashes.SHA256())
     )
 

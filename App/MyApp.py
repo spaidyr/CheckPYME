@@ -5,6 +5,11 @@ from datetime import datetime
 import handler.function as function
 from App.ConfigWindow import ConfigWindow
 from App.CertificatesConfigWindow import CertificatesConfigWindow
+from App.InstallDialog import InstallDialog
+from App.CertificatesAlert import CertificatesAlert
+from App.PasswordDialog import PasswordDialog
+from App.CreateUserWindow import CreateUserWindow
+from handler.Installer.elk_install import main as elk_install
 import time
 
 
@@ -31,6 +36,7 @@ class MyApp(QMainWindow):
 
         optionsMenu = QMenu('Options Menu', self)
         agentMenu = QMenu('Agent Management', self)
+        elkMenu = QMenu('Elasticsearch', self)
 
         optionsMenu.addAction('List connected clients', self.list_clients)
         optionsMenu.addAction('Configuration', self.open_config)
@@ -41,8 +47,16 @@ class MyApp(QMainWindow):
         agentMenu.addAction('Update agents', self.update_agents)
         agentMenu.addAction('Delete agent', self.delete_agent)
 
+        elkMenu.addAction('Start Elasticsearch', self.start_elasticsearch)
+        elkMenu.addAction('Start Kibana', self.start_kibana)
+        elkMenu.addAction('Check Index', self.check_index)
+        elkMenu.addAction('Configure Elasticsearch password', self.elasticsearch_password)
+        elkMenu.addAction('Configure Kibana System password', self.kibana_password)
+        elkMenu.addAction('Create User for client', self.create_user)
+
         menubar.addMenu(optionsMenu)
         menubar.addMenu(agentMenu)
+        menubar.addMenu(elkMenu)
 
         # Configure table widget
         self.tableWidget.setColumnCount(5) # 4 columns for Hostname, IP_Address, Online and Updated
@@ -60,16 +74,29 @@ class MyApp(QMainWindow):
         if not self.server_thread:
             QMessageBox.warning(self, 'Server Error', 'Please configure the server IP.')
         else:
+            #Inicialización elasticsearch
+            dialog = InstallDialog(self)
+            dialog.show()
+            QApplication.processEvents()
+            elk_install(dialog)
+            #╗Comprobar si los certificados están creados
+            check_ca , check_client, check_server = function.check_certificates()
+            if not check_ca & check_client & check_server:
+                alert = CertificatesAlert()
+                alert.exec_()
             # Inicialización de tabla de clientes
-            self.list_clients()
+            elif check_ca & check_client & check_server:
 
-            # Set a timer to update the table every 30 seconds
-            self.timer_clients_online.timeout.connect(self.list_clients)
-            self.timer_clients_online.start(30000) # 30000 ms = 30 seconds
+                #function.sart_server()
+                self.list_clients()
 
-            # Set a timer to update the table every 30 seconds
-            self.timer_last_update.timeout.connect(self.update_agents)
-            self.timer_last_update.start(30000) # 30000 ms = 30 seconds
+                # Set a timer to update the table every 30 seconds
+                self.timer_clients_online.timeout.connect(self.list_clients)
+                self.timer_clients_online.start(30000) # 30000 ms = 30 seconds
+
+                # Set a timer to update the table every 30 seconds
+                self.timer_last_update.timeout.connect(self.update_agents)
+                self.timer_last_update.start(30000) # 30000 ms = 30 seconds
 
     def list_clients(self):
 
@@ -107,7 +134,6 @@ class MyApp(QMainWindow):
     def config_certs(self):
         self.certsConfigWindow = CertificatesConfigWindow(self)
         self.certsConfigWindow.show()
-
 
     def execute_modules(self):
 
@@ -159,6 +185,10 @@ class MyApp(QMainWindow):
             result = function.delete_client(hostname)
             if result:
                 QMessageBox.information(self, 'Delete Agent', 'Agent deleted')
+                # Remove the agent from the table
+                row = self.get_row_by_hostname(hostname)
+                if row is not None:
+                    self.tableWidget.removeRow(row)
             else:
                 QMessageBox.information(self, 'Delete Agent', 'Error')
         self.list_clients()
@@ -170,6 +200,42 @@ class MyApp(QMainWindow):
             event.accept()  # accept the event
         else:
             event.ignore()  # ignore the event
+
+    def elasticsearch_password(self):
+        try:
+            function.reset_elasticsearch_password()
+        except:
+            print("Error, you should first configure Elasticsearch before executing this action")
+
+    def kibana_password(self):
+        try:
+            function.reset_kibana_password()
+            msgBox = PasswordDialog()
+            msgBox.exec()
+        except:
+            print("Error, you should first configure Elasticsearch before executing this action")
+
+    def start_elasticsearch(self):
+        function.start_elasticsearch()
+
+    def start_kibana(self):
+        function.start_kibana()
+
+    def check_index(self):
+        result = function.check_and_create_index()
+        if result == "Connection failed":
+            QMessageBox.critical(self, 'Error', result)
+        elif result == "Índice creado con éxito.":
+            QMessageBox.information(self, 'Exito', result)
+        elif result == "El índice ya existe.":
+            QMessageBox.information(self, 'Información', result)
+ 
+    def kibana_yml_reconfigure(self):
+        pass
+
+    def create_user(self):
+        self.createUserWindow = CreateUserWindow()
+        self.createUserWindow.show()
 
     def quit(self):
         # Function to quit

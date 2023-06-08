@@ -5,10 +5,17 @@ import time
 import platform
 import threading
 import json
+from elasticsearch import Elasticsearch
+
 from cryptography.fernet import Fernet
 import base64
 import ssl
 import shutil
+<<<<<<< HEAD
+=======
+import os
+
+>>>>>>> functional
 
 def read_config():
     with open("config.json", "r") as f:
@@ -136,6 +143,7 @@ def store_encrypted_token(token):
     base64_encrypted_token = base64.b64encode(encrypted_token)
     with open('token.bin', 'wb') as file:
         file.write(base64_encrypted_token)
+    encrypt_and_store_credentials()
 
 # Carga y descifra el token desde el archivo 'token.txt'
 def load_encrypted_token():
@@ -177,6 +185,11 @@ def load_modules():
         with open(log_path, 'a') as file:
              json.dump(log_file, file, ensure_ascii=False)
              file.write('\n')
+        
+        # Post to Elasticsearch
+        post_to_elasticsearch(log_file)
+
+imported_modules = set()
 
 imported_modules = set()
 
@@ -213,7 +226,46 @@ def update_modules(new_modules_data):
 
     print("Módulos actualizados exitosamente")
 
+def encrypt_and_store_credentials():
+    if os.path.exists('elk_credentials.txt'):
+        with open('elk_credentials.txt', 'r') as file:
+            credentials = file.read()
+            
+        encrypted_credentials = encrypt_token(credentials)
+        base64_encrypted_credentials = base64.b64encode(encrypted_credentials)
+        with open('elk.bin', 'wb') as file:
+            file.write(base64_encrypted_credentials)
+        
+        os.remove('elk_credentials.txt')
+        print("Credenciales encriptadas y guardadas exitosamente en 'elk.bin'")
+    else:
+        print("No se encontró el archivo 'elk_credentials.txt'")
+
+def load_and_decrypt_credentials():
+    if os.path.exists('elk.bin'):
+        with open('elk.bin', 'rb') as file:
+            base64_encrypted_credentials = file.read()
+            encrypted_credentials = base64.b64decode(base64_encrypted_credentials)
+            return decrypt_token(encrypted_credentials)
+    else:
+        print("No se encontró el archivo 'elk.bin'")
+    return None
+
+def post_to_elasticsearch(log_data):
+    host = config["server_ip"]
+    credentials = load_and_decrypt_credentials().split(':')
+    es = Elasticsearch(
+        [f'https://{host}:9200'],  # Cambia 'localhost:9200' por tu host y puerto
+        verify_certs=True,  # Cambia a True y proporciona la ruta al certificado SSL si es necesario
+        ca_certs='./certs/ca.crt',
+        basic_auth=(credentials[0], credentials[1])
+    )
+    
+    # Realiza la operación de indexación
+    es.index(index='checkpyme', document=log_data)
+
 if __name__ == '__main__':
+    
     config = read_config()
     start_client(config)
     threading.Thread(target=listen_for_server(config)).start()

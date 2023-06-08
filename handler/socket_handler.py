@@ -1,4 +1,5 @@
 import handler.message as message
+from handler.elastic_handler import check_and_create_index
 import socket
 import threading
 import uuid
@@ -24,7 +25,7 @@ def start_server():
     host_config = config["configuration"][0]["server_ip"]
     port = int(config["configuration"][0]["server_port"])
 
-    if host_system == host_config:
+    if host_config != '':
         server_running = True
         make_socket(host_config, port)
 
@@ -167,4 +168,5 @@ def init_client_connection(host):
         return False
 
 def get_server_running():
+    #return config['server_ip']
     return server_running

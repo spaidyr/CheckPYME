@@ -166,4 +166,5 @@ certs/*/*.crt
 certs/*/*.key
 Agent/certs/*
 Agent/agent.json
+Agent/elk_credentials.txt
 Agent/modules/*.py

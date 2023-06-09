@@ -76,7 +76,6 @@ def copy_file(src_path, dest_path):
     except Exception as e:
         print(f"Ha ocurrido un error al copiar el archivo: {e}")
 
-
 def start_elasticsearch():
     global ELASTICSEARCH_THREAD
     try:

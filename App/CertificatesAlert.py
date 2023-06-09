@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMessageBox, QPushButton
+from PyQt5.QtWidgets import QMessageBox
 
 class CertificatesAlert(QMessageBox):
     def __init__(self, parent=None):

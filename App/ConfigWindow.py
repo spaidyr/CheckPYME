@@ -66,8 +66,28 @@ class ConfigWindow(QDialog):
 
         with open("config.json", "w") as file:
             json.dump(self.old_config, file, indent=4)
+        
+        self.update_agent_json()
 
         if restart_needed:
             QMessageBox.information(self, "Changes Saved", "The configuration changes have been saved. Since you modified the server settings, please restart the application.")
             self.parent.quit()
         self.close()  # Close the window after saving changes
+
+    def update_agent_json(self):
+        # Abre el archivo "agent.json" para su actualización
+        with open("./Agent/config.json", "r+") as file:
+            # Carga el contenido del archivo
+            data = json.load(file)
+
+            # Actualiza el valor de "server_ip" con el valor obtenido de "config.json"
+            data['server_ip'] = self.old_config["configuration"][0]["server_ip"]
+
+            # Posiciona el puntero al inicio del archivo
+            file.seek(0)
+
+            # Escribe el nuevo contenido al archivo
+            json.dump(data, file, indent=4)
+
+            # Trunca el archivo en caso de que el nuevo contenido sea más pequeño que el original
+            file.truncate()

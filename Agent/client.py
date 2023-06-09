@@ -12,12 +12,10 @@ import ssl
 import shutil
 import os
 
-def read_config():
-    with open("config.json", "r") as f:
-        return json.load(f)
+def start_client(config_file):
 
-def start_client(config):
-
+    global config
+    config = config_file
     # Socket Server
 
     host = config["server_ip"]
@@ -167,7 +165,7 @@ def get_module_files(directory):
         return tuple(entry.name for entry in entries if entry.is_file() and entry.name.endswith('.py'))
 
 def load_modules():
-    module_directory = 'modules'
+    module_directory = './modules'
     module_files = get_module_files(module_directory)
     modules = import_modules(module_directory, module_files)
     for module in modules:
@@ -186,13 +184,12 @@ def load_modules():
 
 imported_modules = set()
 
-imported_modules = set()
-
 def import_modules(module_directory, module_files):
     imported_modules = []
     for module_file in module_files:
         module_name = os.path.splitext(module_file)[0]  # Elimina la extensión '.py'
         module_path = f"{module_directory}.{module_name}"
+        module_path = module_path.replace('./', '')  # Elimina './'
         imported_module = importlib.import_module(module_path)
         imported_modules.append(imported_module)
 
@@ -250,17 +247,11 @@ def post_to_elasticsearch(log_data):
     host = config["server_ip"]
     credentials = load_and_decrypt_credentials().split(':')
     es = Elasticsearch(
-        [f'https://{host}:9200'],  # Cambia 'localhost:9200' por tu host y puerto
-        verify_certs=True,  # Cambia a True y proporciona la ruta al certificado SSL si es necesario
+        [f'https://{host}:9200'],
+        verify_certs=True,
         ca_certs='./certs/ca.crt',
         basic_auth=(credentials[0], credentials[1])
     )
     
     # Realiza la operación de indexación
     es.index(index='checkpyme', document=log_data)
-
-if __name__ == '__main__':
-    
-    config = read_config()
-    start_client(config)
-    threading.Thread(target=listen_for_server(config)).start()

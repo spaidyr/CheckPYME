@@ -9,6 +9,7 @@ from App.InstallDialog import InstallDialog
 from App.CertificatesAlert import CertificatesAlert
 from App.PasswordDialog import PasswordDialog
 from App.CreateUserWindow import CreateUserWindow
+from App.PacketWindow import PacketWindow
 from handler.Installer.elk_install import main as elk_install
 import time
 
@@ -41,6 +42,7 @@ class MyApp(QMainWindow):
         optionsMenu.addAction('List connected clients', self.list_clients)
         optionsMenu.addAction('Configuration', self.open_config)
         optionsMenu.addAction('Configuare Certificates', self.config_certs)
+        optionsMenu.addAction('Genearte Packet_Client', self.generate_packetClient)
         optionsMenu.addAction('Quit', self.quit)
 
         agentMenu.addAction('Execute Modules', self.execute_modules)
@@ -229,13 +231,14 @@ class MyApp(QMainWindow):
             QMessageBox.information(self, 'Exito', result)
         elif result == "El índice ya existe.":
             QMessageBox.information(self, 'Información', result)
- 
-    def kibana_yml_reconfigure(self):
-        pass
 
     def create_user(self):
         self.createUserWindow = CreateUserWindow()
         self.createUserWindow.show()
+    
+    def generate_packetClient(self):
+        self.window = PacketWindow()
+        self.window.show()
 
     def quit(self):
         # Function to quit

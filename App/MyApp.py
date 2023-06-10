@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QProgressDialog, QApplication, QMainWindow, QMenu, QMessageBox, QMenuBar, QAction, QInputDialog, QMessageBox, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QInputDialog, QMessageBox, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from datetime import datetime
@@ -73,7 +73,9 @@ class MyApp(QMainWindow):
 
         time.sleep(1)
 
-        if not self.server_thread:
+        server_ip = function.get_server_ip()
+
+        if not server_ip:
             QMessageBox.warning(self, 'Server Error', 'Please configure the server IP.')
         else:
             #Inicialización elasticsearch
@@ -81,16 +83,28 @@ class MyApp(QMainWindow):
             dialog.show()
             QApplication.processEvents()
             elk_install(dialog)
-            #╗Comprobar si los certificados están creados
+
+            #Comprobar si los certificados están creados
             check_ca , check_client, check_server = function.check_certificates()
             if not check_ca & check_client & check_server:
                 alert = CertificatesAlert()
                 alert.exec_()
+            
             # Inicialización de tabla de clientes
             elif check_ca & check_client & check_server:
 
+                function.sart_server()
+
+                count = 0
+                while not self.server_thread:
+                    time.sleep(1)
+                    self.server_thread = function.get_server_running()
+                    count =+ 1
+                    if count == 20:
+                        break
                 #function.sart_server()
                 self.list_clients()
+
 
                 # Set a timer to update the table every 30 seconds
                 self.timer_clients_online.timeout.connect(self.list_clients)

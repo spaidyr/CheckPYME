@@ -37,6 +37,6 @@ class CreateUserWindow(QWidget):
     
     def store_credentials(self, username, password, filename="./Agent/elk_credentials.txt"):
         with open(filename, "w") as file:
-            file.write(f"{username}:{password}\n")
+            file.write(f"{username}:{password}")
 
 

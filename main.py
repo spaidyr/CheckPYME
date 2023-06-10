@@ -12,7 +12,7 @@ def run_app():
 
 def main():    
     
-    server_thread = threading.Thread(target=socket_handler.start_server).start()
+    # server_thread = threading.Thread(target=socket_handler.start_server).start()
 
     app = QApplication(sys.argv)
 

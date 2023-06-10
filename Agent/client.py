@@ -11,6 +11,14 @@ import base64
 import ssl
 import shutil
 import os
+import sys
+
+USER_HOME = os.path.expanduser("~")
+CHECKPYME_FOLDER = os.path.join(USER_HOME, 'Documents', 'CheckPYME')
+KEY_PATH = os.path.join(CHECKPYME_FOLDER, "key.key")
+TOKEN_PATH = os.path.join(CHECKPYME_FOLDER, "token.bin")
+ELK_PATH = os.path.join(CHECKPYME_FOLDER, "elk.bin")
+AGENT_PATH = os.path.join(CHECKPYME_FOLDER, "agent.json")
 
 def start_client(config_file):
 
@@ -24,11 +32,12 @@ def start_client(config_file):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Envuelve el socket del cliente con SSL
+    print(CHECKPYME_FOLDER)
     client_socket = ssl.wrap_socket(
         client_socket, 
-        certfile='./certs/client.crt', 
-        keyfile='./certs/client.key',
-        ca_certs='./certs/ca.crt',
+        certfile=f'{CHECKPYME_FOLDER}/certs/client.crt', 
+        keyfile=f'{CHECKPYME_FOLDER}/certs/client.key',
+        ca_certs=f'{CHECKPYME_FOLDER}/certs/ca.crt',
         cert_reqs=ssl.CERT_REQUIRED
         )
     token = load_encrypted_token()
@@ -53,9 +62,9 @@ def listen_for_server(config):
     # Envuelve el socket de escucha con SSL
     listening_socket = ssl.wrap_socket(
         listening_socket,
-        certfile='./certs/client.crt', 
-        keyfile='./certs/client.key',
-        ca_certs='./certs/ca.crt',
+        certfile=f'{CHECKPYME_FOLDER}/certs/client.crt', 
+        keyfile=f'{CHECKPYME_FOLDER}/certs/client.key',
+        ca_certs=f'{CHECKPYME_FOLDER}/certs/ca.crt',
         cert_reqs=ssl.CERT_REQUIRED,
         server_side=True
         )
@@ -110,14 +119,14 @@ def handle_server_response(client_socket, token, hostname):
 # Genera una clave y guárdala en un archivo seguro (solo la primera vez, luego reutiliza la misma clave)
 def generate_key():
     key = Fernet.generate_key()
-    with open("key.key", "wb") as key_file:
+    with open(KEY_PATH, "wb") as key_file:
         key_file.write(key)
 
 # Carga la clave desde el archivo
 def load_key():
-    if not os.path.exists("key.key"):
+    if not os.path.exists(KEY_PATH):
         generate_key()
-    with open("key.key", "rb") as key_file:
+    with open(KEY_PATH, "rb") as key_file:
         return key_file.read()
 
 def encrypt_token(token):
@@ -134,14 +143,14 @@ def decrypt_token(encrypted_token):
 def store_encrypted_token(token):
     encrypted_token = encrypt_token(token)
     base64_encrypted_token = base64.b64encode(encrypted_token)
-    with open('token.bin', 'wb') as file:
+    with open(TOKEN_PATH, 'wb') as file:
         file.write(base64_encrypted_token)
     encrypt_and_store_credentials()
 
 # Carga y descifra el token desde el archivo 'token.txt'
 def load_encrypted_token():
-    if os.path.exists('token.bin'):
-        with open('token.bin', 'rb') as file:
+    if os.path.exists(TOKEN_PATH):
+        with open(TOKEN_PATH, 'rb') as file:
             base64_encrypted_token = file.read()
             encrypted_token = base64.b64decode(base64_encrypted_token)
             return decrypt_token(encrypted_token)
@@ -165,16 +174,15 @@ def get_module_files(directory):
         return tuple(entry.name for entry in entries if entry.is_file() and entry.name.endswith('.py'))
 
 def load_modules():
-    module_directory = './modules'
-    module_files = get_module_files(module_directory)
-    modules = import_modules(module_directory, module_files)
+    module_files = get_module_files(os.path.join(CHECKPYME_FOLDER, 'modules'))
+    modules = import_modules(os.path.join(CHECKPYME_FOLDER, 'modules'), module_files)
     for module in modules:
+
         importlib.reload(module)  # Aquí se recarga el módulo
         module_name = module.__name__
-        module_path, module_class = module_name.split('.')
-        log_file = getattr(module, module_class)().log_file
-
-        log_path = os.path.join("agent.json")
+        module_class = getattr(module, module_name)
+        log_file = module_class().log_file
+        log_path = os.path.join(AGENT_PATH)
         with open(log_path, 'a') as file:
              json.dump(log_file, file, ensure_ascii=False)
              file.write('\n')
@@ -185,12 +193,12 @@ def load_modules():
 imported_modules = set()
 
 def import_modules(module_directory, module_files):
+    
+    sys.path.append(sys.path.append(module_directory))
     imported_modules = []
     for module_file in module_files:
         module_name = os.path.splitext(module_file)[0]  # Elimina la extensión '.py'
-        module_path = f"{module_directory}.{module_name}"
-        module_path = module_path.replace('./', '')  # Elimina './'
-        imported_module = importlib.import_module(module_path)
+        imported_module = importlib.import_module(module_name)
         imported_modules.append(imported_module)
 
     return imported_modules
@@ -200,9 +208,8 @@ def update_modules(new_modules_data):
     new_modules = json.loads(new_modules_data)
 
     # Borrar todos los archivos en el directorio de módulos
-    module_directory = './modules'
-    for filename in os.listdir(module_directory):
-        file_path = os.path.join(module_directory, filename)
+    for filename in os.listdir(f'{CHECKPYME_FOLDER}/modules'):
+        file_path = os.path.join(f'{CHECKPYME_FOLDER}/modules', filename)
         try:
             if os.path.isfile(file_path) or os.path.islink(file_path):
                 os.unlink(file_path)
@@ -213,29 +220,29 @@ def update_modules(new_modules_data):
 
     for module_name, module_content in new_modules.items():
         # Guardamos el nuevo módulo, reemplazando el antiguo
-        with open(f'./modules/{module_name}', 'w') as f:
+        with open(f'{CHECKPYME_FOLDER}/modules/{module_name}', 'w') as f:
             f.write(module_content)
 
     print("Módulos actualizados exitosamente")
 
 def encrypt_and_store_credentials():
-    if os.path.exists('elk_credentials.txt'):
-        with open('elk_credentials.txt', 'r') as file:
+    if os.path.exists(f'{CHECKPYME_FOLDER}/elk_credentials.txt'):
+        with open(f'{CHECKPYME_FOLDER}/elk_credentials.txt', 'r') as file:
             credentials = file.read()
             
         encrypted_credentials = encrypt_token(credentials)
         base64_encrypted_credentials = base64.b64encode(encrypted_credentials)
-        with open('elk.bin', 'wb') as file:
+        with open(ELK_PATH, 'wb') as file:
             file.write(base64_encrypted_credentials)
         
-        os.remove('elk_credentials.txt')
+        os.remove(f'{CHECKPYME_FOLDER}/elk_credentials.txt')
         print("Credenciales encriptadas y guardadas exitosamente en 'elk.bin'")
     else:
         print("No se encontró el archivo 'elk_credentials.txt'")
 
 def load_and_decrypt_credentials():
-    if os.path.exists('elk.bin'):
-        with open('elk.bin', 'rb') as file:
+    if os.path.exists(ELK_PATH):
+        with open(ELK_PATH, 'rb') as file:
             base64_encrypted_credentials = file.read()
             encrypted_credentials = base64.b64decode(base64_encrypted_credentials)
             return decrypt_token(encrypted_credentials)
@@ -249,9 +256,8 @@ def post_to_elasticsearch(log_data):
     es = Elasticsearch(
         [f'https://{host}:9200'],
         verify_certs=True,
-        ca_certs='./certs/ca.crt',
-        basic_auth=(credentials[0], credentials[1])
+        ca_certs=f'{CHECKPYME_FOLDER}/certs/ca.crt',
+        basic_auth=(credentials[0],credentials[1])
     )
-    
     # Realiza la operación de indexación
     es.index(index='checkpyme', document=log_data)

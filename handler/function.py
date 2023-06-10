@@ -13,6 +13,10 @@ def sart_server():
 def stop_server():
     socket_handler.stop_server()
 
+def get_server_ip():
+    config = socket_handler.read_config()
+    return config["configuration"][0]["server_ip"]
+
 def list_clients():
     content = 'Hello'
     online_clients = socket_handler.sendToEveryClient(content)

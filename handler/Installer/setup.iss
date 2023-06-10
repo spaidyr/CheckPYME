@@ -3,7 +3,7 @@
 
 #define MyAppName "CheckPYME"
 #define MyAppVersion "1.0"
-#define MyAppPublisher "TFM_UEM_DiegoRamírezGriño"
+#define MyAppPublisher "TFM_UEM_DiegoRamï¿½rezGriï¿½o"
 #define MyAppURL "https://github.com/spaidyr/CheckPYME"
 #define MyAppExeName "checkpyme.py"
 #define MyAppAssocName MyAppName + " File"
@@ -13,7 +13,6 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-PrivilegesRequired=lowest
 AppId={{158C6D46-447F-47FC-AE8B-2BB3FAFB3E4B}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -22,12 +21,11 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={userdocs}\{#MyAppName}
+DefaultDirName={pf}\{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
 LicenseFile=C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\LICENSE.txt
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
+PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent_Installer
 OutputBaseFilename=CheckPYME
@@ -44,15 +42,15 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Dirs]
-Name: "{app}\modules"
+Name: "{userdocs}\{#MyAppName}\modules"
 
 [Files]
 Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\certs\*"; DestDir: "{app}\certs"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\agent.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\certs\*"; DestDir: "{userdocs}\{#MyAppName}\certs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\agent.json"; DestDir: "{userdocs}\{#MyAppName}"; Flags: ignoreversion
 Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\client.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\config.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\elk_credentials.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\elk_credentials.txt"; DestDir: "{userdocs}\{#MyAppName}"; Flags: ignoreversion
 Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\handler\Installer\python-install.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -63,8 +61,7 @@ Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; Value
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
-;Root: HKCU; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """C:\Program Files\Python39\python.exe -m "" ""{app}\{#MyAppExeName}"""
-;Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """C:\Program Files\Python39\python.exe -m "" ""{app}\{#MyAppExeName}"""
+Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """C:\Program Files\Python39\python.exe -m "" ""{app}\{#MyAppExeName}"""
 
 
 [Icons]
@@ -79,7 +76,7 @@ Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install cr
 Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install elasticsearch==8.8.0"; StatusMsg: "Instalando la biblioteca elasticsearch..."; Flags: runhidden
 Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install pytz==2023.3"; StatusMsg: "Instalando la biblioteca elasticsearch..."; Flags: runhidden
 
-; Ejecuta tu aplicación
+; Ejecuta tu aplicaciï¿½n
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
 
 

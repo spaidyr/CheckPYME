@@ -6,7 +6,10 @@ ES = Elasticsearch(
     ca_certs='./certs/ca/ca.crt',
     basic_auth=('elastic', 'elastic'),  # Descomenta y añade las credenciales si tu servidor Elasticsearch requiere autenticación
     )
-INDEX_NAME = 'checkpyme'
+INDEX_NAME = 'checkpyme-agents'
+INDEX_RESULT = 'checkpyme-results-levels'
+INDEX_STATUS = 'checkpyme-results-status'
+
 ROL_NAME = 'index_checkpyme'
 
 def check_and_create_index():
@@ -23,6 +26,34 @@ def check_and_create_index():
         }
 
         res = ES.indices.create(index=INDEX_NAME, body=settings)
+        if res['acknowledged']:
+            print("Índice creado con éxito.")
+    else:
+        print("El índice ya existe.")
+    
+    if not ES.indices.exists(index=INDEX_RESULT):
+        settings = {
+            "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 0
+            }
+        }
+
+        res = ES.indices.create(index=INDEX_RESULT, body=settings)
+        if res['acknowledged']:
+            print("Índice creado con éxito.")
+    else:
+        print("El índice ya existe.")
+    
+    if not ES.indices.exists(index=INDEX_STATUS):
+        settings = {
+            "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 0
+            }
+        }
+
+        res = ES.indices.create(index=INDEX_STATUS, body=settings)
         if res['acknowledged']:
             print("Índice creado con éxito.")
     else:
@@ -62,14 +93,14 @@ def create_user(username, password, roles):
     except es_exceptions.NotFoundError:
         return f"User {username} could not be created."
 
-def consulta_prueba():
+def get_checkpyme(module_name, hostname):
 
     query = {
         "query": {
             "bool": {
                 "must": [
-                    {"match": {"module_name": "PasswordPolicies"}},
-                    {"match": {"hostname": "DESKTOP-74FHCQM"}}
+                    {"match": {"module_name.keyword": module_name}},  # Usamos la variable module_name
+                    {"match": {"hostname.keyword": hostname}}  # Usamos la variable hostname
                 ]
             }
         },
@@ -77,10 +108,21 @@ def consulta_prueba():
         "size": 1
     }
 
-    response = ES.search(index="prueba", body=query)
+    response = ES.search(index=INDEX_NAME, body=query)  # Cambiado el índice a "checkpyme"
 
     # Devuelve el último documento indexado si existe
     if response['hits']['hits']:
         return response['hits']['hits'][0]
     else:
         return None
+
+
+def post_results(doc_body, index_type):
+    try:
+        res = ES.index(index=index_type, body=doc_body)
+        if res['result'] == 'created':
+            return f"Document successfully created with _id: {res['_id']}"
+        else:
+            return "Unexpected result: " + res['result']
+    except es_exceptions.ElasticsearchException as e:
+        return "Error: " + str(e)

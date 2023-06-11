@@ -12,7 +12,7 @@ from App.CreateUserWindow import CreateUserWindow
 from App.PacketWindow import PacketWindow
 from handler.Installer.elk_install import main as elk_install
 import time
-
+import threading
 
 class MyApp(QMainWindow):
 
@@ -26,6 +26,7 @@ class MyApp(QMainWindow):
         self.timer_clients_online = QTimer()
         self.timer_last_update = QTimer()
         self.last_mod_times = function.get_mod_times()
+        
         self.initUI()
 
     def initUI(self):
@@ -39,7 +40,7 @@ class MyApp(QMainWindow):
         agentMenu = QMenu('Agent Management', self)
         elkMenu = QMenu('Elasticsearch', self)
 
-        optionsMenu.addAction('List connected clients', self.list_clients)
+        optionsMenu.addAction('List connected clients', self.thread_clients)
         optionsMenu.addAction('Configuration', self.open_config)
         optionsMenu.addAction('Configuare Certificates', self.config_certs)
         optionsMenu.addAction('Genearte Packet_Client', self.generate_packetClient)
@@ -48,6 +49,8 @@ class MyApp(QMainWindow):
         agentMenu.addAction('Execute Modules', self.execute_modules)
         agentMenu.addAction('Update agents', self.update_agents)
         agentMenu.addAction('Delete agent', self.delete_agent)
+        agentMenu.addAction('Check STICS and Guides', self.thread_full_security)
+        agentMenu.addAction('Check security with custom policies', self.thread_custom_security)
 
         elkMenu.addAction('Start Elasticsearch', self.start_elasticsearch)
         elkMenu.addAction('Start Kibana', self.start_kibana)
@@ -103,17 +106,26 @@ class MyApp(QMainWindow):
                     if count == 20:
                         break
                 #function.sart_server()
-                self.list_clients()
+                self.thread_clients()
 
 
                 # Set a timer to update the table every 30 seconds
-                self.timer_clients_online.timeout.connect(self.list_clients)
+                self.timer_clients_online.timeout.connect(self.thread_clients)
                 self.timer_clients_online.start(30000) # 30000 ms = 30 seconds
 
                 # Set a timer to update the table every 30 seconds
                 self.timer_last_update.timeout.connect(self.update_agents)
                 self.timer_last_update.start(30000) # 30000 ms = 30 seconds
 
+    def thread_clients(self):
+        list_clients_thread = threading.Thread(target=self.list_clients).start()
+
+    def thread_full_security(self):
+        check_security_thread = threading.Thread(target=self.check_full_security).start()
+    
+    def thread_custom_security(self):
+        check_security_thread = threading.Thread(target=self.check_custom_security).start()
+    
     def list_clients(self):
 
         # Function to list clients
@@ -143,6 +155,12 @@ class MyApp(QMainWindow):
             # Add the QTableWidgetItem to the table
             self.tableWidget.setItem(row, 2, item)
 
+    def check_full_security(self):
+        function.check_security(parameter='full')
+    
+    def check_custom_security(self):
+        function.check_security(parameter='custom')
+
     def open_config(self):
         self.configWindow = ConfigWindow(self)
         self.configWindow.show()
@@ -161,6 +179,9 @@ class MyApp(QMainWindow):
                 row = self.get_row_by_hostname(client_data['hostname'])  # find the row of the agent by hostname
                 if row is not None:
                     self.tableWidget.setItem(row, 3, QTableWidgetItem(current_datetime))  # update the 'last_check' cell
+        
+        time.sleep(2)
+        self.check_full_security()
 
     def update_agents(self):
 

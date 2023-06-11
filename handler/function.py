@@ -6,6 +6,7 @@ import certs.certs as certs
 import shutil
 import subprocess
 import threading
+from check.check import recived_doc as analize
 
 def sart_server():
     server_thread = threading.Thread(target=socket_handler.start_server).start()
@@ -148,3 +149,32 @@ def check_certificates():
         server_certs = True
 
     return ca_certs, client_certs, server_certs
+
+def check_security(parameter):
+    config = socket_handler.read_config()
+    modules = config.get("modules", [])
+    module_list = []
+    if parameter == 'full':
+        for module in modules:
+            module_list.extend(module.keys())
+    else:
+        for module in modules:
+            for module_name, status in module.items():
+                if status.lower() == "true":
+                    module_list.append(module_name)
+    
+    check_iterator(module_list)
+
+def check_iterator(module_list):
+    INDEX_RESULT = 'checkpyme-results-levels'
+    INDEX_STATUS = 'checkpyme-results-status'
+    for policie in module_list:
+            for client, client_data in clients.items():
+                doc_file = elk.get_checkpyme(policie, client_data["hostname"])
+                # print(doc_file)
+                doc_low, doc_medium, doc_high, doc_security_status = analize(doc_file, policie, client_data["hostname"])
+        #        analize(doc_file, policie, client_data["hostname"])
+                elk.post_results(doc_low, INDEX_RESULT)
+                elk.post_results(doc_medium, INDEX_RESULT)
+                elk.post_results(doc_high, INDEX_RESULT)
+                elk.post_results(doc_security_status, INDEX_STATUS)

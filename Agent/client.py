@@ -260,4 +260,7 @@ def post_to_elasticsearch(log_data):
         basic_auth=(credentials[0],credentials[1])
     )
     # Realiza la operación de indexación
-    es.index(index='checkpyme', document=log_data)
+    try:
+        es.index(index='checkpyme-agents', document=log_data)
+    except:
+        pass

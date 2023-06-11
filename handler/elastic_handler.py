@@ -93,7 +93,7 @@ def create_user(username, password, roles):
     except es_exceptions.NotFoundError:
         return f"User {username} could not be created."
 
-def get_checkpyme(module_name, hostname):
+def get_checkpyme(module_name, hostname, index_name):
 
     query = {
         "query": {
@@ -108,7 +108,7 @@ def get_checkpyme(module_name, hostname):
         "size": 1
     }
 
-    response = ES.search(index=INDEX_NAME, body=query)  # Cambiado el índice a "checkpyme"
+    response = ES.search(index=index_name, body=query)  # Cambiado el índice a "checkpyme"
 
     # Devuelve el último documento indexado si existe
     if response['hits']['hits']:
@@ -116,6 +116,28 @@ def get_checkpyme(module_name, hostname):
     else:
         return None
 
+def get_checkpyme_compliance(module_name, hostname, security_level):
+    query = {
+        "query": {
+            "bool": {
+                "must": [
+                    {"match": {"module_name.keyword": module_name}},  # Usamos la variable module_name
+                    {"match": {"hostname.keyword": hostname}},  # Usamos la variable hostname
+                    {"match": {"security_level.keyword": security_level}}  # Usamos la variable hostname
+                ]
+            }
+        },
+        "sort": [{"timestamp": {"order": "desc"}}],
+        "size": 1
+    }
+
+    response = ES.search(index=INDEX_RESULT, body=query)  # Cambiado el índice a "checkpyme"
+
+    # Devuelve el último documento indexado si existe
+    if response['hits']['hits']:
+        return response['hits']['hits'][0]
+    else:
+        return None
 
 def post_results(doc_body, index_type):
     try:

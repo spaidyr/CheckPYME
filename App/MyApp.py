@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QInputDialog, QMessageBox, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QInputDialog, QMessageBox, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QAbstractItemView
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QFont
 from datetime import datetime
 import handler.function as function
 from App.ConfigWindow import ConfigWindow
@@ -10,6 +10,7 @@ from App.CertificatesAlert import CertificatesAlert
 from App.PasswordDialog import PasswordDialog
 from App.CreateUserWindow import CreateUserWindow
 from App.PacketWindow import PacketWindow
+from App.HostPolicieWindow import HostPolicieWindow
 from handler.Installer.elk_install import main as elk_install
 import time
 import threading
@@ -32,7 +33,7 @@ class MyApp(QMainWindow):
     def initUI(self):
 
         self.setWindowTitle("CheckPYME")  # Set the window title
-        self.setGeometry(100, 100, 800, 600) # Establece la ventana en la posición (100, 100) y con tamaño 800px de ancho y 600px de alto
+        self.setGeometry(100, 100, 865, 600) # Establece la ventana en la posición (100, 100) y con tamaño 800px de ancho y 600px de alto
         
         menubar = self.menuBar()
 
@@ -64,8 +65,15 @@ class MyApp(QMainWindow):
         menubar.addMenu(elkMenu)
 
         # Configure table widget
-        self.tableWidget.setColumnCount(5) # 4 columns for Hostname, IP_Address, Online and Updated
-        self.tableWidget.setHorizontalHeaderLabels(['Hostname', 'IP_Address', 'Online', 'last_check', 'last_update'])
+        self.tableWidget.setColumnCount(7) # 7 columns for Hostname, IP_Address, Online and Updated
+        self.tableWidget.setHorizontalHeaderLabels(['Hostname', 'IP_Address', 'Online', 'last_check', 'last_update', 'Compliance STIC', 'Compliance Custom'])
+        self.tableWidget.setColumnWidth(0, 150)
+        self.tableWidget.setColumnWidth(2, 50)
+        self.tableWidget.setColumnWidth(3, 115)
+        self.tableWidget.setColumnWidth(4, 115)
+        self.tableWidget.setColumnWidth(5, 150)
+        self.tableWidget.setColumnWidth(6, 150)
+
 
         layout = QVBoxLayout()
         layout.addWidget(self.tableWidget)
@@ -107,6 +115,8 @@ class MyApp(QMainWindow):
                         break
                 #function.sart_server()
                 self.thread_clients()
+                time.sleep(1)
+                self.thread_full_security()
 
 
                 # Set a timer to update the table every 30 seconds
@@ -122,17 +132,21 @@ class MyApp(QMainWindow):
 
     def thread_full_security(self):
         check_security_thread = threading.Thread(target=self.check_full_security).start()
+        time.sleep(3)
+        self.color_compliance_cells()
     
     def thread_custom_security(self):
         check_security_thread = threading.Thread(target=self.check_custom_security).start()
+        time.sleep(3)
+        self.color_compliance_cells()
     
     def list_clients(self):
 
         # Function to list clients
         result = function.list_clients()
         for token, client_data in result.items():
-            print (result)
-            online_status = QIcon("./App/icons/online.png") if client_data['result'] else QIcon("./App/icons/offline.png")
+#            print (result)
+#            online_status = QIcon(QPixmap("./App/icons/online.png") if client_data['result'] else QIcon(QPixmap("./App/icons/offline.png")))
             
             # Find row by IP
             row = self.get_row_by_ip(client_data['address'])
@@ -146,10 +160,12 @@ class MyApp(QMainWindow):
             
             # Create a QTableWidgetItem
             item = QTableWidgetItem()
+            self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
             # Create a QIcon
             icon = QIcon(QPixmap('./App/icons/online.png' if client_data['result'] else './App/icons/offline.png'))
             # Set the icon to the QTableWidgetItem
             item.setIcon(icon)
+            item.setFlags(item.flags() & ~Qt.ItemIsEditable)
             # Align the icon to center
             item.setTextAlignment(Qt.AlignCenter)
             # Add the QTableWidgetItem to the table
@@ -274,6 +290,69 @@ class MyApp(QMainWindow):
     def generate_packetClient(self):
         self.window = PacketWindow()
         self.window.show()
+    
+    def color_compliance_cells(self):
+        """Colorea las celdas de la columna 'Compliance STICS' según los niveles de cumplimiento.
+        Los niveles de cumplimiento pueden ser 'none', 'low', 'medium' y 'high'.
+        """
+
+        # Colores para los niveles de cumplimiento
+        colors = {
+            'None': QColor('red'),
+            'low': QColor('orange'),
+            'medium': QColor('yellow'),
+            'high': QColor('green'),
+        }
+
+        # Fuente para el texto de las celdas
+        font = QFont()
+        font.setBold(True)
+        font.setPointSize(10)
+
+        for row in range(self.tableWidget.rowCount()):
+            # Obten el hostname de la fila actual
+            hostname_item = self.tableWidget.item(row, 0)
+
+            if hostname_item is None:
+                continue  # si la celda está vacía, pasa a la siguiente fila
+
+            hostname = hostname_item.text()
+            # Obtiene el nivel de cumplimiento para el hostname actual
+            level = function.compliance_STIC(hostname)
+
+            # Si el nivel obtenido está en la lista de colores, colorea la celda
+            if level in colors:
+                item = QTableWidgetItem(level)
+                item.setBackground(colors[level])  # set background color
+                item.setForeground(QColor('black'))  # set text color
+                item.setFont(font)  # set font
+                item.setTextAlignment(Qt.AlignCenter)
+                self.tableWidget.setItem(row, 5, item)
+                self.tableWidget.cellClicked.connect(self.open_host_policie_window)
+            
+            # Obtiene el nivel de cumplimiento custom para el hostname actual
+            level_custom = function.compliance_custom(hostname)
+
+            # Si el nivel obtenido está en la lista de colores, colorea la celda
+            if level_custom in colors:
+                item = QTableWidgetItem(level_custom)
+                item.setBackground(colors[level_custom])  # set background color
+                item.setForeground(QColor('black'))  # set text color
+                item.setFont(font)  # set font
+                item.setTextAlignment(Qt.AlignCenter)
+                self.tableWidget.setItem(row, 6, item)
+                self.tableWidget.cellClicked.connect(self.open_host_policie_window)
+            else:
+                self.tableWidget.setItem(row, 6, None)
+
+    def open_host_policie_window(self, row, column):
+        
+        hostname_item = self.tableWidget.item(row, 0)
+        if hostname_item is None:
+            return
+        hostname = hostname_item.text()
+        self.extraWindow = HostPolicieWindow(hostname)
+        self.extraWindow.show()
 
     def quit(self):
         # Function to quit
@@ -281,3 +360,6 @@ class MyApp(QMainWindow):
         if reply == QMessageBox.Yes:
             function.stop_server()
             QApplication.instance().quit()
+    
+
+

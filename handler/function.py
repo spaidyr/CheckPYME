@@ -8,6 +8,10 @@ import subprocess
 import threading
 from check.check import recived_doc as analize
 
+INDEX_NAME = 'checkpyme-agents'
+INDEX_RESULT = 'checkpyme-results-levels'
+INDEX_STATUS = 'checkpyme-results-status'
+
 def sart_server():
     server_thread = threading.Thread(target=socket_handler.start_server).start()
 
@@ -166,11 +170,9 @@ def check_security(parameter):
     check_iterator(module_list)
 
 def check_iterator(module_list):
-    INDEX_RESULT = 'checkpyme-results-levels'
-    INDEX_STATUS = 'checkpyme-results-status'
     for policie in module_list:
             for client, client_data in clients.items():
-                doc_file = elk.get_checkpyme(policie, client_data["hostname"])
+                doc_file = elk.get_checkpyme(policie, client_data["hostname"], INDEX_NAME)
                 # print(doc_file)
                 doc_low, doc_medium, doc_high, doc_security_status = analize(doc_file, policie, client_data["hostname"])
         #        analize(doc_file, policie, client_data["hostname"])
@@ -178,3 +180,102 @@ def check_iterator(module_list):
                 elk.post_results(doc_medium, INDEX_RESULT)
                 elk.post_results(doc_high, INDEX_RESULT)
                 elk.post_results(doc_security_status, INDEX_STATUS)
+
+def compliance_STIC(hostname):
+    config = socket_handler.config
+    modules = config['modules']
+
+    total_counters = {'none': 0, 'low': 0, 'medium': 0, 'high': 0}
+
+    for module in modules:
+        for key in module:
+            response = elk.get_checkpyme(key, hostname, INDEX_STATUS)
+            # Get the '_source' data
+            counters = get_list_counters(response)
+            total_counters = {key: total_counters[key] + counters[key] for key in total_counters}
+    
+    value = get_min_value(total_counters)
+    return value
+
+def compliance_custom(hostname):
+    config = socket_handler.read_config()
+    modules = config.get("modules", [])
+    total_counters = {'none': 0, 'low': 0, 'medium': 0, 'high': 0}
+    for module in modules:
+        for key, status in module.items():
+            if status.lower() == "true":
+                response = elk.get_checkpyme(key, hostname, INDEX_STATUS)
+                # Get the '_source' data
+                counters = get_list_counters(response)
+                total_counters = {key: total_counters[key] + counters[key] for key in total_counters}
+    value = get_min_value(total_counters)
+    return value    
+    
+    
+
+
+def get_policie(hostname, policie):
+    response = elk.get_checkpyme(policie, hostname, INDEX_STATUS)
+    source_data = response.get('_source', {})
+    # Convertimos el diccionario a una lista de items (pares clave-valor)
+    items = list(source_data.items())
+    # Removemos las tres primeras y la última clave
+    items = items[3:-1]
+    # Volvemos a convertir la lista de items a un diccionario
+    final_dict = dict(items)
+    return final_dict
+
+def get_status_policie(policie, hostname):
+    respone = elk.get_checkpyme(policie, hostname, INDEX_STATUS)
+    counters = get_list_counters(respone)
+    status = get_min_value(counters)
+    return status
+
+def get_booleans_security(hostname, security_level):
+    config = socket_handler.config
+    modules = config['modules']
+
+    counters = { True:0, False:0}
+
+    for module in modules:
+        for key in module:
+            response = elk.get_checkpyme_compliance(key, hostname, security_level)
+            source_data = response.get('_source', {})
+            for value in source_data.values():
+                if value in counters:
+                    counters[value] += 1
+    return counters
+
+def get_booleans_policie(hostname, policie, security_level):
+    counters = { True:0, False:0}
+    response = elk.get_checkpyme_compliance(policie, hostname, security_level)
+    source_data = response.get('_source', {})
+    for value in source_data.values():
+        if value in counters:
+            counters[value] += 1
+    return counters
+def get_list_counters(response):
+    
+     # Initialize the counters
+    counters = {'none': 0, 'low': 0, 'medium': 0, 'high': 0}
+
+    source_data = response.get('_source', {})
+    for value in source_data.values():
+        if value.lower() in counters:
+            counters[value.lower()] += 1
+
+    # Return a dictionary with the counter values
+    return counters
+
+def get_min_value(counters):
+    if counters["none"] > 0:
+        return 'None'
+    elif counters["low"] > 0:
+        return 'low'
+    elif counters["medium"] > 0:
+        return 'medium'
+    elif counters["high"] > 0:
+        return 'high'
+
+def read_config():
+    return socket_handler.config

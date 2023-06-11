@@ -24,12 +24,12 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\LICENSE.txt
+LicenseFile=C:\your_path\CheckPYME\LICENSE.txt
 PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent_Installer
+OutputDir=C:\your_path\CheckPYME\Agent_Installer
 OutputBaseFilename=CheckPYME
-SetupIconFile=C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\icon.ico
+SetupIconFile=C:\your_path\CheckPYME\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -45,14 +45,14 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "{userdocs}\{#MyAppName}\modules"
 
 [Files]
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\certs\*"; DestDir: "{userdocs}\{#MyAppName}\certs"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\agent.json"; DestDir: "{userdocs}\{#MyAppName}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\client.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\config.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\elk_credentials.txt"; DestDir: "{userdocs}\{#MyAppName}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\Agent\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\DIEGO\Dropbox\UEM\TFM\CheckPYME\handler\Installer\python-install.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "C:\your_path\CheckPYME\Agent\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\your_path\CheckPYME\Agent\certs\*"; DestDir: "{userdocs}\{#MyAppName}\certs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\your_path\CheckPYME\Agent\agent.json"; DestDir: "{userdocs}\{#MyAppName}"; Flags: ignoreversion
+Source: "C:\your_path\CheckPYME\Agent\client.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\your_path\CheckPYME\Agent\config.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\your_path\CheckPYME\Agent\elk_credentials.txt"; DestDir: "{userdocs}\{#MyAppName}"; Flags: ignoreversion
+Source: "C:\your_path\CheckPYME\Agent\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\your_path\CheckPYME\handler\Installer\python-install.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

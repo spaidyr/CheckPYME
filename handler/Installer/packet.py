@@ -1,10 +1,12 @@
 import os
-import subprocess
+import re
 import shutil
+import subprocess
 
 class AgentFilePacket:
     def __init__(self):
         if self.check_files_exist():
+            self.update_source_paths_in_iss('handler/Installer/setup.iss')
             self.exec_innoSetup()
         else:
             pass  # Implementa lo que quieras hacer si los archivos NO existen.
@@ -57,3 +59,23 @@ class AgentFilePacket:
         inno_setup_path = '"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"'
         iss_script_path = '".\handler\Installer\setup.iss"'
         subprocess.run(f'{inno_setup_path} /Qp {iss_script_path}', shell=True)
+    
+
+    def update_source_paths_in_iss(self, iss_filepath):
+        # Get the current working directory
+        current_dir = os.getcwd()
+        print(current_dir)
+    
+        # Open the ISS file
+        with open(iss_filepath, 'r') as file:
+            iss_file_contents = file.read()
+    
+        # Define the old path to be replaced
+        old_path = "C:\your_path\CheckPYME"
+    
+        # Replace all occurrences of the old path with the new path
+        new_contents = iss_file_contents.replace(old_path, current_dir)
+        
+        # Write the updated content back to the ISS file
+        with open(iss_filepath, 'w') as file:
+            file.write(new_contents)

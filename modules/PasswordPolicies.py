@@ -6,16 +6,16 @@ import pytz
 
 class PasswordPolicies():
 
-    def __init__(self):
-        result = {}
+    def __init__(self) -> dict:
+        self.result = {}
         name = 'PasswordPolicies'
-        result['module_name'] = name
-        result['hostname'] = platform.node()
+        self.result['module_name'] = name
+        self.result['hostname'] = platform.node()
         madrid_tz = pytz.timezone('Europe/Madrid')
-        result['timestamp'] = datetime.now(madrid_tz).isoformat()
-        self.log_file = self.check(result)
+        self.result['timestamp'] = datetime.now(madrid_tz).isoformat()
+        self.log_file = self.check()
 
-    def check(self, result):
+    def check(self):
 
         # Definimos las claves en inglés correspondientes a cada posición
         key_names_eng = [
@@ -43,8 +43,8 @@ class PasswordPolicies():
                 if match:
                     value = match.group(1)
                     key_eng = key_names_eng[i]  # Asignamos la clave en inglés correspondiente a esta posición
-                    result[key_eng] = value
+                    self.result[key_eng] = value
                 
         except subprocess.CalledProcessError as e:
             print(f"Error al ejecutar el comando: {e}")
-        return result
+        return self.result

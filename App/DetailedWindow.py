@@ -12,7 +12,7 @@ class DetailedWindow(QDialog):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle(f'Details for {self.module_key} on {self.hostname}')
+        self.setWindowTitle(f'{self.module_key} on {self.hostname}')
         self.setGeometry(1100, 100, 307, 400)
 
         vbox = QVBoxLayout()

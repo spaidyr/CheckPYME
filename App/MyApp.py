@@ -160,7 +160,6 @@ class MyApp(QMainWindow):
             
             # Create a QTableWidgetItem
             item = QTableWidgetItem()
-            self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
             # Create a QIcon
             icon = QIcon(QPixmap('./App/icons/online.png' if client_data['result'] else './App/icons/offline.png'))
             # Set the icon to the QTableWidgetItem
@@ -170,6 +169,8 @@ class MyApp(QMainWindow):
             item.setTextAlignment(Qt.AlignCenter)
             # Add the QTableWidgetItem to the table
             self.tableWidget.setItem(row, 2, item)
+            
+        self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     def check_full_security(self):
         function.check_security(parameter='full')
@@ -351,6 +352,11 @@ class MyApp(QMainWindow):
         if hostname_item is None:
             return
         hostname = hostname_item.text()
+
+        if hasattr(self, 'extraWindow'):  # Verifica si ya existe 'extraWindow'
+            if isinstance(self.extraWindow, HostPolicieWindow):  # Verifica si 'extraWindow' es una instancia de 'HostPolicieWindow'
+                self.extraWindow.close()  # Si es cierto, cierra la ventana existente
+
         self.extraWindow = HostPolicieWindow(hostname)
         self.extraWindow.show()
 

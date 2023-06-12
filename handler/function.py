@@ -210,9 +210,6 @@ def compliance_custom(hostname):
                 total_counters = {key: total_counters[key] + counters[key] for key in total_counters}
     value = get_min_value(total_counters)
     return value    
-    
-    
-
 
 def get_policie(hostname, policie):
     response = elk.get_checkpyme(policie, hostname, INDEX_STATUS)

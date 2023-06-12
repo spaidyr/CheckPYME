@@ -1,7 +1,7 @@
 {
     "configuration": [
         {
-            "server_ip": "192.168.1.143",
+            "server_ip": "",
             "server_port": "6605",
             "client_port": "6610"
         }

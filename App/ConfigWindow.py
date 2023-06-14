@@ -2,7 +2,26 @@ import json
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QGroupBox, QCheckBox
 
 class ConfigWindow(QDialog):
+    """
+    Clase que implementa una ventana de diálogo para la configuración de la aplicación.
+
+    Attributes
+    ----------
+    parent : QWidget
+        El widget padre de la ventana de configuración. 
+    saveButton : QPushButton
+        Botón para guardar los cambios en la configuración.
+    layout : QVBoxLayout
+        Layout principal para la ventana de diálogo.
+    config_widgets : dict
+        Diccionario para almacenar las referencias a los widgets que contienen los valores de configuración.
+    old_config : dict
+        Diccionario para almacenar la configuración original leída del archivo de configuración.
+    """
     def __init__(self, parent=None):
+        """
+        Constructor de la clase. Inicializa la interfaz de usuario y carga la configuración existente desde el archivo de configuración.
+        """
         super(ConfigWindow, self).__init__(parent)
         self.parent = parent
 
@@ -19,6 +38,10 @@ class ConfigWindow(QDialog):
         self.setLayout(self.layout)
 
     def load_config(self):
+        """
+        Carga la configuración desde el archivo 'config.json'. Para cada sección de la configuración, se crea un QGroupBox. 
+        Dentro de cada QGroupBox, se crea un grid layout y se agregan widgets para cada clave y valor en la sección.
+        """
         with open("config.json", "r") as file:
             self.old_config = json.load(file)
 
@@ -51,6 +74,12 @@ class ConfigWindow(QDialog):
                 self.layout.addWidget(group_box)
 
     def save_config(self):
+        """
+        Guarda la configuración en el archivo 'config.json'. Recoge los valores de los widgets y los guarda en el diccionario 
+        de configuración. Luego vuelca el diccionario en el archivo de configuración. Después de guardar la configuración, 
+        llama a la función 'update_agent_json' para actualizar el archivo 'agent.json'. Si se han modificado los ajustes del 
+        servidor, muestra un cuadro de mensaje informando al usuario de que debe reiniciar la aplicación.
+        """
         restart_needed = False
         for section in self.old_config:
             for i, config in enumerate(self.old_config[section]):
@@ -75,6 +104,12 @@ class ConfigWindow(QDialog):
         self.close()  # Close the window after saving changes
 
     def update_agent_json(self):
+        """
+        Actualiza el archivo 'agent.json' con el nuevo valor del 'server_ip' obtenido de 'config.json'. 
+        El archivo 'agent.json' se abre en modo de lectura y escritura, se carga el contenido en un diccionario, 
+        se actualiza el valor de 'server_ip', se escribe el nuevo contenido en el archivo y luego se trunca el archivo 
+        en caso de que el nuevo contenido sea más pequeño que el original.
+        """
         # Abre el archivo "agent.json" para su actualización
         with open("./Agent/config.json", "r+") as file:
             # Carga el contenido del archivo

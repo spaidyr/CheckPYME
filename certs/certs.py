@@ -12,11 +12,25 @@ from datetime import datetime, timedelta
 
 
 def read_config():
+    """
+    Lee y carga la configuración desde un archivo JSON.
+
+    Returns:
+        dict: Configuración cargada desde el archivo JSON.
+    """
     with open(".\certs\config.json", "r") as f:
         return json.load(f)
 
 def generate_ca(config):
+    """
+    Genera la clave privada y el certificado de la Autoridad de Certificación (CA).
 
+    Args:
+        config (dict): Configuración para generar la CA.
+
+    Returns:
+        tuple: Tupla que contiene la clave privada y el certificado de la CA.
+    """
     # Genera la clave privada de la CA
     ca_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
@@ -56,7 +70,17 @@ def generate_ca(config):
 
 
 def generate_client_key_cert(ca_private_key, ca_cert, config):
+    """
+    Genera la clave privada y el certificado del cliente, firmado por la CA.
 
+    Args:
+        ca_private_key (RSAPrivateKey): Clave privada de la CA.
+        ca_cert (Certificate): Certificado de la CA.
+        config (dict): Configuración para generar el certificado del cliente.
+
+    Returns:
+        tuple: Tupla que contiene la clave privada y el certificado del cliente.
+    """
     # Genera la clave privada del cliente
     client_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
@@ -104,7 +128,17 @@ def generate_client_key_cert(ca_private_key, ca_cert, config):
     return client_private_key, client_cert
 
 def generate_server_key_cert(ca_private_key, ca_cert, config):
+    """
+    Genera la clave privada y el certificado del servidor, firmado por la CA.
 
+    Args:
+        ca_private_key (RSAPrivateKey): Clave privada de la CA.
+        ca_cert (Certificate): Certificado de la CA.
+        config (dict): Configuración para generar el certificado del servidor.
+
+    Returns:
+        tuple: Tupla que contiene la clave privada y el certificado del servidor.
+    """
     # Genera la clave privada del cliente
     server_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 

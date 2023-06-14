@@ -3,8 +3,13 @@ from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton
 KIBANA_YML = 'C:\\Elastic\\Kibana\\8.8.0\\kibana-8.8.0\\config\\kibana.yml'
 
 class PasswordDialog(QDialog):
-
+    """
+    A custom QDialog that prompts the user to enter a password.
+    """
     def __init__(self):
+        """
+        Initializes the PasswordDialog with a QLineEdit for password input and a submit QPushButton.
+        """
         super().__init__()
 
         #self.setGeometry(100, 100, 300, 300)  # Set window size to 300x300 pixels
@@ -23,12 +28,22 @@ class PasswordDialog(QDialog):
         self.setLayout(layout)
 
     def submit(self):
+        """
+        Retrieves the text from the QLineEdit and calls the modify_yml method to update the password in the YML file.
+        Finally, closes the dialog.
+        """
         password = self.password_line_edit.text()
 
         self.modify_yml(password)
         self.close()
 
     def modify_yml(self, password):
+        """
+        Modifies the Kibana YML configuration file to replace the old password with the new one.
+
+        Args:
+            password (str): The new password to be set.
+        """
         # Read the YML file
         with open(KIBANA_YML, 'r') as file:
             lines = file.readlines()

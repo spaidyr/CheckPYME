@@ -1,3 +1,6 @@
+"""
+Importación de bibliotecas y módulos necesarios
+"""
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QInputDialog, QMessageBox, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QAbstractItemView
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QFont
@@ -16,8 +19,30 @@ import time
 import threading
 
 class MyApp(QMainWindow):
+    """
+    Esta es la clase principal que inicia y controla la interfaz gráfica de la aplicación.
+    
+    Atributos:
+        server_thread: Un objeto de hilo que representa el servidor en ejecución.
+        tableWidget: Un objeto QTableWidget para mostrar datos en una estructura tabular.
+        timer_clients_online: Un objeto QTimer para manejar el tiempo de los clientes en línea.
+        timer_last_update: Un objeto QTimer para manejar el tiempo desde la última actualización.
+        last_mod_times: Un objeto que almacena los tiempos de modificación.
+
+    Métodos:
+        initUI(): Este método inicializa la interfaz de usuario.
+        closeEvent(event): Este método maneja el evento de cierre de la aplicación.
+        color_compliance_cells(): Este método colorea las celdas de la columna 'Compliance STICS'.
+        open_host_policie_window(row, column): Este método abre la ventana de políticas del host cuando se hace clic en una celda.
+        quit(): Este método cierra la aplicación.
+    """
 
     def __init__(self):
+        """
+        Constructor para la clase MyApp.
+        
+        Inicializa la aplicación, crea los widgets necesarios y establece los temporizadores y las variables necesarias.
+        """
         super().__init__()
 
         time.sleep(1)
@@ -31,7 +56,12 @@ class MyApp(QMainWindow):
         self.initUI()
 
     def initUI(self):
-
+        """
+        Inicializa la interfaz de usuario.
+        
+        Este método configura el título y la geometría de la ventana principal, crea e inicializa los widgets y 
+        los agrega a la ventana principal. También se conectan las señales y los slots para manejar los eventos de usuario.
+        """
         self.setWindowTitle("CheckPYME")  # Set the window title
         self.setGeometry(100, 100, 865, 600) # Establece la ventana en la posición (100, 100) y con tamaño 800px de ancho y 600px de alto
         
@@ -128,24 +158,47 @@ class MyApp(QMainWindow):
                 self.timer_last_update.start(30000) # 30000 ms = 30 seconds
 
     def thread_clients(self):
+        """
+        Inicia un nuevo hilo para listar los clientes.
+
+        Este método crea e inicia un nuevo hilo que llama a la función list_clients() de la clase.
+        """
         list_clients_thread = threading.Thread(target=self.list_clients).start()
 
     def thread_full_security(self):
+        """
+        Inicia un nuevo hilo para verificar la seguridad completa y luego colorea las celdas de cumplimiento.
+
+        Este método crea e inicia un nuevo hilo que llama a la función check_full_security() de la clase, 
+        espera durante tres segundos, y luego llama a la función color_compliance_cells() para colorear las celdas de cumplimiento.
+        """
         check_security_thread = threading.Thread(target=self.check_full_security).start()
         time.sleep(3)
         self.color_compliance_cells()
     
     def thread_custom_security(self):
+        """
+        Inicia un nuevo hilo para verificar la seguridad personalizada y luego colorea las celdas de cumplimiento.
+
+        Este método crea e inicia un nuevo hilo que llama a la función check_custom_security() de la clase, 
+        espera durante tres segundos, y luego llama a la función color_compliance_cells() para colorear las celdas de cumplimiento.
+        """
         check_security_thread = threading.Thread(target=self.check_custom_security).start()
         time.sleep(3)
         self.color_compliance_cells()
     
     def list_clients(self):
+        """
+        Lista los clientes y actualiza la tabla en la interfaz de usuario.
+
+        Este método llama a la función list_clients() de una clase externa para obtener 
+        los datos de los clientes, luego actualiza la tabla en la interfaz de usuario con 
+        los datos de los clientes, incluyendo el estado en línea o fuera de línea de cada cliente.
+        """
 
         # Function to list clients
-        result = function.list_clients()
+        result = function.get_list_clients()
         for token, client_data in result.items():
-#            print (result)
 #            online_status = QIcon(QPixmap("./App/icons/online.png") if client_data['result'] else QIcon(QPixmap("./App/icons/offline.png")))
             
             # Find row by IP
@@ -173,21 +226,50 @@ class MyApp(QMainWindow):
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     def check_full_security(self):
+        """
+        Verifica la seguridad completa.
+
+        Este método llama a la función check_security() de una clase externa con el 
+        parámetro 'full' para verificar la seguridad completa.
+        """
         function.check_security(parameter='full')
     
     def check_custom_security(self):
+        """
+        Verifica la seguridad personalizada.
+
+        Este método llama a la función check_security() de una clase externa con el 
+        parámetro 'custom' para verificar la seguridad personalizada.
+        """
         function.check_security(parameter='custom')
 
     def open_config(self):
+        """
+        Abre la ventana de configuración.
+
+        Este método crea e muestra una nueva ventana de configuración.
+        """
         self.configWindow = ConfigWindow(self)
         self.configWindow.show()
 
     def config_certs(self):
+        """
+        Abre la ventana de configuración de certificados.
+
+        Este método crea y muestra una nueva ventana de configuración de certificados.
+        """
         self.certsConfigWindow = CertificatesConfigWindow(self)
         self.certsConfigWindow.show()
 
     def execute_modules(self):
+        """
+        Ejecuta los módulos y actualiza la tabla en la interfaz de usuario.
 
+        Este método llama a la función execute_modules() de una clase externa para 
+        ejecutar los módulos, luego actualiza la columna 'last_check' en la tabla de 
+        la interfaz de usuario con la fecha y hora actuales para cada agente que tuvo 
+        un resultado exitoso.
+        """
         # Function to execute modules
         result = function.excute_modules()
         for token, client_data in result.items():
@@ -201,7 +283,17 @@ class MyApp(QMainWindow):
         self.check_full_security()
 
     def update_agents(self):
+        """
+        Actualiza los agentes y actualiza la tabla en la interfaz de usuario.
 
+        Este método llama a la función get_mod_times() de una clase externa para 
+        obtener los tiempos de modificación, luego si los tiempos de modificación 
+        son diferentes a los últimos tiempos de modificación almacenados, llama a 
+        la función update_clients() de una clase externa para actualizar los clientes, 
+        y finalmente actualiza la columna 'last_check' en la tabla de la interfaz 
+        de usuario con la fecha y hora actuales para cada agente que tuvo un 
+        resultado exitoso.
+        """
         check_mod_times = function.get_mod_times()
 
         if check_mod_times == self.last_mod_times:
@@ -217,6 +309,15 @@ class MyApp(QMainWindow):
                         self.tableWidget.setItem(row, 4, QTableWidgetItem(current_datetime))  # update the 'last_check' cell
 
     def get_row_by_hostname(self, hostname):
+        """
+        Devuelve el índice de la fila que corresponde al nombre de host dado.
+
+        Args:
+            hostname (str): El nombre de host para el que se busca la fila.
+
+        Returns:
+            int: El índice de la fila que corresponde al nombre de host, o None si no se encuentra ninguna fila que corresponda.
+        """
         # Loop over all rows
         for row in range(self.tableWidget.rowCount()):
             # If the hostname in the row matches the given hostname
@@ -226,12 +327,30 @@ class MyApp(QMainWindow):
         return None
 
     def get_row_by_ip(self, ip):
+        """
+        Devuelve el índice de la fila que corresponde a la IP dada.
+
+        Args:
+            ip (str): La IP para la cual se busca la fila.
+
+        Returns:
+            int: El índice de la fila que corresponde a la IP, o None si no se encuentra ninguna fila que corresponda.
+        """
         for row in range(self.tableWidget.rowCount()):
             if self.tableWidget.item(row, 1).text() == ip:
                 return row
         return None
 
     def delete_agent(self):
+        """
+        Elimina un agente.
+
+        Este método muestra un cuadro de diálogo de entrada para obtener el nombre 
+        de host del agente a eliminar, luego llama a la función delete_client() de 
+        una clase externa con el nombre de host dado para eliminar el agente, y 
+        finalmente si el agente se eliminó con éxito, lo elimina de la tabla en 
+        la interfaz de usuario y muestra un mensaje de información.
+        """
         # Show input dialog to get the hostname
         hostname, ok = QInputDialog.getText(self, 'Delete Agent', 'Enter the hostname:')
         if ok:
@@ -248,6 +367,15 @@ class MyApp(QMainWindow):
         self.list_clients()
 
     def closeEvent(self, event):
+        """
+        Maneja el evento de cierre de la aplicación.
+        
+        Este método se llama cuando se cierra la ventana principal. Presenta un cuadro de diálogo 
+        de confirmación y si el usuario confirma, detiene el servidor y cierra la aplicación.
+        
+        Parámetros:
+            event (QCloseEvent): El evento de cierre.
+        """
         reply = QMessageBox.question(self, 'Message', 'Are you sure you want to shut down the server?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             function.stop_server()
@@ -256,12 +384,27 @@ class MyApp(QMainWindow):
             event.ignore()  # ignore the event
 
     def elasticsearch_password(self):
+        """
+        Intenta resetear la contraseña de Elasticsearch.
+
+        Este método llama a la función reset_elasticsearch_password() de una clase 
+        externa para resetear la contraseña de Elasticsearch. 
+        Si ocurre alguna excepción durante el proceso, se imprime un mensaje de error.
+        """
+    # ..
         try:
             function.reset_elasticsearch_password()
         except:
             print("Error, you should first configure Elasticsearch before executing this action")
 
     def kibana_password(self):
+        """
+        Intenta resetear la contraseña de Kibana y muestra un cuadro de diálogo de contraseña.
+
+        Este método llama a la función reset_kibana_password() de una clase externa para resetear la contraseña de Kibana. 
+        Si se logra resetear la contraseña, se muestra un cuadro de diálogo de contraseña.
+        Si ocurre alguna excepción durante el proceso, se imprime un mensaje de error.
+        """
         try:
             function.reset_kibana_password()
             msgBox = PasswordDialog()
@@ -270,33 +413,64 @@ class MyApp(QMainWindow):
             print("Error, you should first configure Elasticsearch before executing this action")
 
     def start_elasticsearch(self):
+        """
+        Inicia Elasticsearch.
+
+        Este método llama a la función start_elasticsearch() de una clase externa para iniciar Elasticsearch.
+        """
         function.start_elasticsearch()
 
     def start_kibana(self):
+        """
+        Inicia Kibana.
+
+        Este método llama a la función start_kibana() de una clase externa para iniciar Kibana.
+        """
         function.start_kibana()
 
     def check_index(self):
-        result = function.check_and_create_index()
-        if result == "Connection failed":
-            QMessageBox.critical(self, 'Error', result)
-        elif result == "Índice creado con éxito.":
-            QMessageBox.information(self, 'Exito', result)
-        elif result == "El índice ya existe.":
-            QMessageBox.information(self, 'Información', result)
+        """
+        Verifica e intenta crear los índices en Elasticsearch.
+
+        Este método llama a la función check_and_create_index() de una clase externa para verificar e intentar crear los índices en Elasticsearch, 
+        luego muestra un mensaje en un cuadro de diálogo de acuerdo con el resultado de la verificación y la creación del índice.
+        """
+        results = function.check_and_create_index()
+        if "Connection failed" in results:
+            QMessageBox.critical(self, 'Error', "Connection failed")
+        else:
+            for result in results:
+                if "creado con éxito" in result:
+                    QMessageBox.information(self, 'Exito', result)
+                elif "ya existe" in result:
+                    QMessageBox.information(self, 'Información', result)
 
     def create_user(self):
+        """
+        Abre la ventana de creación de usuario.
+
+        Este método crea e muestra una nueva ventana de creación de usuario.
+        """
         self.createUserWindow = CreateUserWindow()
         self.createUserWindow.show()
     
     def generate_packetClient(self):
+        """
+        Abre la ventana de PacketWindow.
+
+        Este método crea e muestra una nueva ventana de PacketWindow.
+        """
         self.window = PacketWindow()
         self.window.show()
     
     def color_compliance_cells(self):
-        """Colorea las celdas de la columna 'Compliance STICS' según los niveles de cumplimiento.
-        Los niveles de cumplimiento pueden ser 'none', 'low', 'medium' y 'high'.
         """
-
+        Colorea las celdas de la columna 'Compliance STICS'.
+        
+        Este método colorea las celdas en la columna 'Compliance STICS' de la tabla en 
+        función de los niveles de cumplimiento. Las celdas con un nivel alto de cumplimiento 
+        se colorean de verde, las de nivel medio de amarillo y las de nivel bajo de rojo.
+        """
         # Colores para los niveles de cumplimiento
         colors = {
             'None': QColor('red'),
@@ -319,7 +493,7 @@ class MyApp(QMainWindow):
 
             hostname = hostname_item.text()
             # Obtiene el nivel de cumplimiento para el hostname actual
-            level = function.compliance_STIC(hostname)
+            level = function.get_compliance_full(hostname)
 
             # Si el nivel obtenido está en la lista de colores, colorea la celda
             if level in colors:
@@ -332,7 +506,7 @@ class MyApp(QMainWindow):
                 self.tableWidget.cellClicked.connect(self.open_host_policie_window)
             
             # Obtiene el nivel de cumplimiento custom para el hostname actual
-            level_custom = function.compliance_custom(hostname)
+            level_custom = function.get_compliance_custom(hostname)
 
             # Si el nivel obtenido está en la lista de colores, colorea la celda
             if level_custom in colors:
@@ -347,7 +521,17 @@ class MyApp(QMainWindow):
                 self.tableWidget.setItem(row, 6, None)
 
     def open_host_policie_window(self, row, column):
+        """
+        Abre la ventana de políticas del host cuando se hace clic en una celda.
         
+        Este método se llama cuando se hace clic en una celda de la tabla. Abre una nueva 
+        ventana que muestra las políticas del host para el host correspondiente a la fila de 
+        la celda en la que se hizo clic.
+        
+        Parámetros:
+            row (int): El índice de la fila en la que se hizo clic.
+            column (int): El índice de la columna en la que se hizo clic.
+        """
         hostname_item = self.tableWidget.item(row, 0)
         if hostname_item is None:
             return
@@ -361,7 +545,12 @@ class MyApp(QMainWindow):
         self.extraWindow.show()
 
     def quit(self):
-        # Function to quit
+        """
+        Cierra la aplicación.
+        
+        Este método detiene el servidor y cierra la aplicación. Se llama cuando se selecciona 
+        la opción de salir en el menú de la aplicación o cuando se cierra la ventana principal.
+        """
         reply = QMessageBox.question(self, 'Menssage', 'Are you sure you want to shut down the server? (y/n): ', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             function.stop_server()

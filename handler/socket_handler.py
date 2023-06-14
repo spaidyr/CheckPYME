@@ -1,5 +1,4 @@
 import handler.message as message
-from handler.elastic_handler import check_and_create_index
 import socket
 import threading
 import uuid
@@ -13,10 +12,20 @@ server_running = False
 server_socket = None
 
 def read_config():
+    """
+    Lee la configuración del servidor desde un archivo JSON.
+
+    Devuelve:
+        dict: Diccionario que contiene la configuración del servidor.
+    """
     with open("config.json", "r") as f:
         return json.load(f)
     
 def start_server():
+    """
+    Inicia el servidor. Lee la configuración del servidor desde un archivo 
+    JSON y utiliza esa configuración para iniciar el servidor.
+    """
     global config
     global server_socket
     global server_running
@@ -30,7 +39,14 @@ def start_server():
         make_socket(host_config, port)
 
 def make_socket(host, port):
-     # Crea un socket de servidor no seguro
+    """
+    Crea e inicia un socket de servidor.
+
+    Argumentos:
+        host (str): Dirección IP del host.
+        port (int): Número de puerto en el que se iniciará el servidor.
+    """
+    # Crea un socket de servidor no seguro
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(host)
     # Envuelve el socket del servidor con SSL
@@ -55,10 +71,20 @@ def make_socket(host, port):
     server_socket.close()
 
 def stop_server():
+    """
+    Detiene el servidor. Establece el indicador de ejecución del servidor en Falso.
+    """
     global server_running
     server_running = False
     
 def handle_client_init(client_socket, client_address):
+    """
+    Maneja la conexión inicial de un cliente.
+
+    Argumentos:
+        client_socket (socket.socket): El socket asociado con el cliente.
+        client_address (tuple): Dirección IP y número de puerto del cliente.
+    """
     received_data = client_socket.recv(1024).decode('utf-8')
     received_token, hostname = received_data.split('|')
 
@@ -86,6 +112,12 @@ def handle_client_init(client_socket, client_address):
     client_socket.close()
 
 def send_modules_to_client(client_socket):
+    """
+    Envia módulos de código a un cliente.
+
+    Argumentos:
+        client_socket (socket.socket): El socket asociado con el cliente.
+    """
     # Primero, obtenemos todos los archivos de módulo en la carpeta 'modules'
     module_files = os.listdir('./modules/')
 
@@ -102,25 +134,66 @@ def send_modules_to_client(client_socket):
     client_socket.send(f'UPDATE_MODULES{new_modules_json}'.encode('utf-8'))
 
 def generate_token():
+    """
+    Genera un token único utilizando el módulo uuid.
+
+    Devuelve:
+        str: Un token único en formato string.
+    """
     return str(uuid.uuid4())
 
 def new_client(hostname, client_address, client_socket):
+    """
+    Registra un nuevo cliente en la base de datos y en el diccionario 'clients'.
+
+    Argumentos:
+        hostname (str): El nombre del host del cliente.
+        client_address (tuple): La dirección IP y el número de puerto del cliente.
+        client_socket (socket.socket): El socket asociado con el cliente.
+    """
     new_token = generate_token()
-    while new_token in clients:  # Asegurar que el token no se repita
+    while new_token in clients:  # Asegura que el token no se repita
         new_token = generate_token()
     db_register_client(client_address, new_token, client_socket, hostname)
     client_socket.send(new_token.encode('utf-8'))
 
 def db_register_client(client_address, token, client_socket, hostname):
+    """
+    Registra un nuevo cliente en la base de datos y en el diccionario 'clientes'.
+
+    Argumentos:
+        client_address (tuple): La dirección IP y el número de puerto del cliente.
+        token (str): El token único del cliente.
+        client_socket (socket.socket): El socket asociado con el cliente.
+        hostname (str): El nombre del host del cliente.
+    """
     clients[token] = {'hostname': hostname, 'address': client_address[0], 'socket': client_socket}
     db.register_db_with_new_client(token, hostname, client_address[0])
 
 def db_update_client(client_address, token, client_socket, hostname):
+    """
+    Actualiza la dirección IP y el socket de un cliente existente en la base de datos y en el diccionario 'clients'.
+
+    Argumentos:
+        client_address (tuple): La dirección IP y el número de puerto del cliente.
+        token (str): El token único del cliente.
+        client_socket (socket.socket): El socket asociado con el cliente.
+        hostname (str): El nombre del host del cliente.
+    """
     clients[token]['address'] = client_address[0]
     clients[token]['socket'] = client_socket
     db.update_client_address_in_db(hostname, client_address[0])
 
 def delete_client(hostname):
+    """
+    Elimina un cliente de la base de datos y del diccionario 'clientes' utilizando el nombre del host.
+
+    Argumentos:
+        hostname (str): El nombre del host del cliente.
+
+    Devuelve:
+        bool: True si el cliente se eliminó con éxito, False en caso contrario.
+    """
     for index in clients.values():
         if index['hostname'] == hostname:
             try:
@@ -139,6 +212,15 @@ def delete_client(hostname):
     return False
 
 def sendToEveryClient(content):
+    """
+    Envia un mensaje a todos los clientes en el diccionario 'clientes'.
+
+    Argumentos:
+        content (str): El mensaje a enviar a los clientes.
+
+    Devuelve:
+        dict: Un diccionario de clientes y los resultados de la operación de envío.
+    """
     exec_clients = {}
     for token, client_data in clients.items():
         if client_data:
@@ -150,6 +232,16 @@ def sendToEveryClient(content):
     return exec_clients
 
 def init_client_connection(host):
+    """
+    Inicia una conexión con un cliente.
+
+    Argumentos:
+        host (str): La dirección IP del host del cliente.
+
+    Devuelve:
+        socket.socket: El socket asociado con el cliente si la conexión se establece con éxito.
+        False: False si ocurre un error al establecer la conexión.
+    """
     port = int(config["configuration"][0]["client_port"])
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)       
@@ -168,5 +260,10 @@ def init_client_connection(host):
         return False
 
 def get_server_running():
-    #return config['server_ip']
+    """
+    Obtiene el estado de ejecución del servidor.
+
+    Devuelve:
+        bool: True si el servidor está en ejecución, False en caso contrario.
+    """
     return server_running

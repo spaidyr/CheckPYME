@@ -5,13 +5,52 @@ from handler.function import get_policie as get_policie
 from handler.function import get_booleans_policie as get_booleans
 
 class DetailedWindow(QDialog):
+    """
+    Clase para la ventana de diálogo que muestra detalles de un módulo específico para un host.
+    Esta ventana de diálogo muestra una tabla con los valores parametrizados de una poliítica concreta 
+    y su estado, así como la información sobre el cumplimiento de los niveles de seguridad para cada
+    una de ellas.
+
+    Attributes
+    ----------
+    hostname : str
+        El nombre del host para el que se muestran los detalles.
+    module_key : str
+        La clave de la política para la que se muestran los detalles.
+    """
     def __init__(self, hostname, module_key):
+        """
+        Constructor de la clase. Inicializa los atributos y llama a la función para construir la interfaz de usuario.
+        
+        Parameters
+        ----------
+        hostname : str
+            El nombre del host para el que se muestran los detalles.
+        module_key : str
+            La clave de la política para la que se muestran los detalles.
+        """
         super().__init__()
         self.hostname = hostname
         self.module_key = module_key
         self.initUI()
 
     def initUI(self):
+        """
+        Inicializa la interfaz de usuario para la ventana de diálogo. Esta interfaz consiste en una tabla
+        que muestra las políticas del módulo y su estado para el host y el módulo seleccionados y una serie 
+        de etiquetas y widgets que muestran información adicional sobre los niveles de seguridad.
+
+        La tabla se llena con los datos de las políticas obtenidos del archivo de configuración. Cada fila
+        de la tabla representa una política y tiene dos columnas: el nombre de la política y su estado. El estado
+        de la política se colorea de acuerdo a su nivel de cumplimiento, usando rojo para 'Ninguno', naranja
+        para 'bajo', amarillo para 'medio' y verde para 'alto'.
+
+        Por debajo de la tabla, se muestra información adicional sobre el cumplimiento de los niveles de
+        seguridad en forma de porcentajes. Esto se presenta en tres columnas para los niveles 'bajo',
+        'medio' y 'alto', respectivamente. Los porcentajes se calculan utilizando la función
+        'get_true_percentage' y representan la proporción de políticas con valor 'True' para cada nivel
+        de seguridad.
+        """
         self.setWindowTitle(f'{self.module_key} on {self.hostname}')
         self.setGeometry(1100, 100, 307, 400)
 
@@ -88,6 +127,15 @@ class DetailedWindow(QDialog):
         self.setLayout(vbox)
 
     def get_true_percentage(self, count_dict):
+        """
+        Calcula el porcentaje de elementos con valor True en el diccionario proporcionado.
+
+        Parámetros:
+        count_dict (dict): Diccionario con valores booleanos.
+
+        Retorna:
+        float: Porcentaje de elementos con valor True.
+        """
         total = sum(count_dict.values())
         true_count = count_dict.get(True, 0)
         true_percentage = (true_count / total) * 100

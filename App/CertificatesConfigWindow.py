@@ -4,7 +4,22 @@ from handler.function import generate_certificates, copy_file as copy_cert
 import re
 
 class CertificatesConfigWindow(QMainWindow):
+    """
+    Clase que implementa una ventana de configuración de certificados.
+
+    Attributes
+    ----------
+    config : dict
+        Diccionario para almacenar la configuración de los certificados leída del archivo de configuración.
+    layout : QVBoxLayout
+        Layout principal para la ventana de configuración de certificados.
+    tables : list
+        Lista para almacenar referencias a las tablas que contienen la configuración de los certificados.
+    """
     def __init__(self, parent=None):
+        """
+        Constructor de la clase. Inicializa la interfaz de usuario y carga la configuración de los certificados desde el archivo de configuración.
+        """
         super(CertificatesConfigWindow, self).__init__(parent)
 
         # Load config
@@ -37,6 +52,21 @@ class CertificatesConfigWindow(QMainWindow):
         self.setCentralWidget(centralWidget)
 
     def create_table(self, config):
+        """
+        Crea una tabla QTableWidget para mostrar las claves y valores de una configuración de certificados.
+        La tabla tiene tantas filas como elementos en la configuración y dos columnas para 'Key' y 'Value'. 
+        Para cada clave y valor en la configuración, se crea un QTableWidgetItem para la clave y un QLineEdit para el valor.
+
+        Parameters
+        ----------
+        config : dict
+            Diccionario que contiene la configuración de los certificados.
+
+        Returns
+        -------
+        table : QTableWidget
+            Tabla que contiene los widgets para la visualización y edición de la configuración de los certificados.
+        """
         table = QTableWidget()
         table.setRowCount(len(config))
         table.setColumnCount(2)
@@ -55,6 +85,12 @@ class CertificatesConfigWindow(QMainWindow):
         return table
 
     def save_config(self):
+        """
+        Guarda la configuración en el archivo 'config.json'. Recoge los valores de las celdas de las tablas y los guarda en el diccionario 
+        de configuración. Luego vuelca el diccionario en el archivo de configuración. Después de guardar la configuración, muestra un cuadro 
+        de mensaje preguntando al usuario si desea generar nuevos certificados. Si el usuario acepta, se llaman a las funciones 
+        'generate_certificates' y 'copy_cert' para generar y copiar los certificados, respectivamente.
+        """
         for cert_type, table in self.tables:  # iterate over each table
             config = {table.item(row, 0).text(): table.cellWidget(row, 1).text() for row in range(table.rowCount())}
             self.config[cert_type] = config

@@ -1,24 +1,55 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QDialog, QTableWidget, QTableWidgetItem, QLabel
+from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QDialog, QTableWidget, QTableWidgetItem, QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
-from handler.function import read_config as read_config
+from handler.function import get_config as get_config
 from handler.function import get_status_policie as get_value
 from handler.function import get_booleans_security as get_booleans
 from App.DetailedWindow import DetailedWindow
 
 class HostPolicieWindow(QDialog):
-    
+    """
+    Clase para crear una ventana de diálogo que muestra el estado de las políticas para un host específico.
+
+    Atributos:
+    hostname (str): Nombre del host para el que se mostrarán las políticas.
+    table (QTableWidget): Tabla que muestra las políticas y su estado.
+    """
     def __init__(self, hostname):
+        """
+        Constructor de la clase HostPolicieWindow.
+
+        Parámetros:
+        hostname (str): Nombre del host para el que se mostrarán las políticas.
+        """
         super().__init__()
         self.hostname = hostname
         self.initUI()
 
     def initUI(self):
+        """
+        Inicializa la interfaz de usuario para la ventana de diálogo. Esta interfaz consiste en una tabla
+        que muestra los módulos y su estado para el host seleccionado y una serie de etiquetas y widgets
+        que muestran información adicional sobre los niveles de seguridad.
+    
+        La tabla se llena con los datos de los módulos obtenidos del archivo de configuración. Cada fila
+        de la tabla representa un módulo y tiene dos columnas: el nombre del módulo y su estado. El estado
+        del módulo se colorea de acuerdo a su nivel de cumplimiento, usando rojo para 'Ninguno', naranja
+        para 'bajo', amarillo para 'medio' y verde para 'alto'.
+    
+        Por debajo de la tabla, se muestra información adicional sobre el cumplimiento de los niveles de
+        seguridad en forma de porcentajes. Esto se presenta en tres columnas para los niveles 'bajo',
+        'medio' y 'alto', respectivamente. Los porcentajes se calculan utilizando la función
+        'get_true_percentage' y representan la proporción de elementos con valor 'True' para cada nivel
+        de seguridad.
+    
+        Por último, la función conecta la señal 'cellClicked' de la tabla a la función 'open_detailed_window',
+        que abre una nueva ventana con información detallada sobre el módulo seleccionado.
+        """
         self.setWindowTitle(self.hostname)
 
         vbox = QVBoxLayout()
 
-        config = read_config()
+        config = get_config()
         modules = config['modules']
 
         # Crea una tabla con tantas filas como módulos y 2 columnas
@@ -99,12 +130,28 @@ class HostPolicieWindow(QDialog):
         self.setLayout(vbox)
 
     def get_true_percentage(self, count_dict):
+        """
+        Calcula el porcentaje de elementos con valor True en el diccionario proporcionado.
+
+        Parámetros:
+        count_dict (dict): Diccionario con valores booleanos.
+
+        Retorna:
+        float: Porcentaje de elementos con valor True.
+        """
         total = sum(count_dict.values())
         true_count = count_dict.get(True, 0)
         true_percentage = (true_count / total) * 100
         return true_percentage
 
     def open_detailed_window(self, row, column):
+        """
+        Abre una nueva ventana detallada para el módulo seleccionado.
+
+        Parámetros:
+        row (int): Número de fila de la celda seleccionada.
+        column (int): Número de columna de la celda seleccionada.
+        """
         if column == 1:  # Si se ha hecho clic en la columna de "Status"
             module_item = self.table.item(row, 0)
             module_key = module_item.text() if module_item else ''

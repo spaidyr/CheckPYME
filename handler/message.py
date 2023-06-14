@@ -1,6 +1,19 @@
 import handler.socket_handler as socket_handler
 
 def online (token, client_socket, content):
+    """
+    Comprueba la autenticación, ejecuta módulos o actualiza módulos en función de la 'content' proporcionada.
+    La función cierra el socket cliente al final de la ejecución.
+
+    Argumentos:
+        token (str): El token de autorización esperado para la autenticación.
+        client_socket (socket): El socket del cliente con el que se establece la conexión.
+        content (str): La instrucción que se debe ejecutar. Debe ser 'Hello' para la autenticación,
+                       'exec_modules' para la ejecución de módulos o 'update_modules' para la actualización de módulos.
+
+    Devuelve:
+        bool: True si la instrucción se ejecutó con éxito y False en caso contrario o si el socket del cliente no está presente.
+    """
     result = False
     try:
         if client_socket:

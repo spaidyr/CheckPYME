@@ -19,7 +19,41 @@ KIBANA_ZIP = "kibana-8.8.0-windows-x86_64.zip"
 ELASTICSEARCH_YML = 'C:\\Elastic\\Elasticsearch\\8.8.0\\elasticsearch-8.8.0\\config\\elasticsearch.yml'
 KIBANA_YML = 'C:\\Elastic\\Kibana\\8.8.0\\kibana-8.8.0\\config\\kibana.yml'
 
-def download_file(url, local_filename):
+def main(dialog):
+    """
+    Función principal que inicia la descarga, instalación y configuración de Elasticsearch y Kibana.
+    
+    Parámetros:
+    dialog (QDialog, opcional): Un diálogo Qt que muestra el progreso de la instalación.
+    """
+    if not __is_elasticsearch_installed():
+        try:
+            if dialog:
+                dialog.setLabelText('Installing Elasticsearch...')
+            __install_elasticsearch()
+            __update_elastic_config(ELASTICSEARCH_YML)
+            __remove_zip(ELASTICSEARCH_ZIP)  # Elimina el .zip de Elasticsearch después de una instalación exitosa
+        except:
+            print("Error when install Elasticsearch")
+    else:
+        print("Elasticsearch is already installed.")
+
+    if not __is_kibana_installed():
+        try:
+            if dialog:
+                dialog.setLabelText('Installing Kibana...')
+            __install_kibana()
+            __update_kibana_config(KIBANA_YML)
+            __remove_zip(KIBANA_ZIP)  # Elimina el .zip de Kibana después de una instalación exitosa
+        except:
+            print("Error when install Kibana")
+    else:
+        print("Kibana is already installed.")
+    
+    if dialog:
+        dialog.close()
+
+def __download_file(url, local_filename):
     """
     Descarga un archivo de una URL dada y lo guarda en un directorio local especificado.
     
@@ -33,7 +67,7 @@ def download_file(url, local_filename):
             for chunk in r.iter_content(chunk_size=8192): 
                 f.write(chunk)
 
-def extract_zip(file_path, extract_path):
+def __extract_zip(file_path, extract_path):
     """
     Extrae un archivo zip a un directorio específico.
     
@@ -44,20 +78,20 @@ def extract_zip(file_path, extract_path):
     with zipfile.ZipFile(file_path, 'r') as zip_ref:
         zip_ref.extractall(extract_path)
 
-def install_elasticsearch():
+def __install_elasticsearch():
     """
     Descarga, extrae e instala Elasticsearch si aún no está instalado.
     También agrega una contraseña segura al keystore de Elasticsearch.
     """
     if not os.path.isfile(ELASTICSEARCH_ZIP):
         print("Downloading Elasticsearch...")
-        download_file(ELASTICSEARCH_URL, ELASTICSEARCH_ZIP)
+        __download_file(ELASTICSEARCH_URL, ELASTICSEARCH_ZIP)
 
     print("Extracting and installing Elasticsearch...")
-    extract_zip(ELASTICSEARCH_ZIP, ELASTICSEARCH_PATH)
-    add_secure_password_to_keystore('elastic')
+    __extract_zip(ELASTICSEARCH_ZIP, ELASTICSEARCH_PATH)
+    __add_secure_password_to_keystore('elastic')
 
-def add_secure_password_to_keystore(password):
+def __add_secure_password_to_keystore(password):
     """
     Agrega una contraseña segura al keystore de Elasticsearch.
     
@@ -79,18 +113,18 @@ def add_secure_password_to_keystore(password):
     except Exception as e:
         print(f"Ha ocurrido un error al agregar la contraseña al keystore: {e}")
 
-def install_kibana():
+def __install_kibana():
     """
     Descarga, extrae e instala Kibana si aún no está instalado.
     """
     if not os.path.isfile(KIBANA_ZIP):
         print("Downloading Kibana...")
-        download_file(KIBANA_URL, KIBANA_ZIP)
+        __download_file(KIBANA_URL, KIBANA_ZIP)
 
     print("Extracting and installing Kibana...")
-    extract_zip(KIBANA_ZIP, KIBANA_PATH)
+    __extract_zip(KIBANA_ZIP, KIBANA_PATH)
 
-def is_elasticsearch_installed():
+def __is_elasticsearch_installed():
     """
     Comprueba si Elasticsearch ya está instalado.
     
@@ -100,7 +134,7 @@ def is_elasticsearch_installed():
     # Comprobar si existe el directorio de instalación de Elasticsearch
     return os.path.isdir(ELASTICSEARCH_PATH)
 
-def is_kibana_installed():
+def __is_kibana_installed():
     """
     Comprueba si Kibana ya está instalado.
     
@@ -110,7 +144,7 @@ def is_kibana_installed():
     # Comprobar si existe el directorio de instalación de Kibana
     return os.path.isdir(KIBANA_PATH)
 
-def update_elastic_config(file_path):
+def __update_elastic_config(file_path):
     """
     Actualiza la configuración de Elasticsearch en el archivo .yml.
     
@@ -137,9 +171,9 @@ def update_elastic_config(file_path):
         'xpack.security.transport.ssl.certificate: server.crt',
         'xpack.security.transport.ssl.certificate_authorities: ca.crt'
     ]
-    write_file(file_path, updates, new_lines)    
+    __write_file(file_path, updates, new_lines)    
 
-def  update_kibana_config(file_path):
+def  __update_kibana_config(file_path):
     """
     Actualiza la configuración de Kibana en el archivo .yml.
     
@@ -161,9 +195,9 @@ def  update_kibana_config(file_path):
 
     # Add new lines at the end
     new_lines = []
-    write_file(file_path, updates, new_lines)
+    __write_file(file_path, updates, new_lines)
 
-def write_file(file_path, updates, new_lines):
+def __write_file(file_path, updates, new_lines):
     """
     Escribe líneas en un archivo.
     
@@ -198,7 +232,7 @@ def write_file(file_path, updates, new_lines):
             if (new_line + '\n') not in lines:
                 file.write(new_line + '\n')
 
-def remove_zip(file_path):
+def __remove_zip(file_path):
     """
     Elimina el archivo .zip especificado.
     
@@ -211,37 +245,3 @@ def remove_zip(file_path):
             print(f"{file_path} ha sido eliminado con éxito.")
         except Exception as e:
             print(f"Error al eliminar el archivo {file_path}: {e}")
-
-def main(dialog=None):
-    """
-    Función principal que inicia la descarga, instalación y configuración de Elasticsearch y Kibana.
-    
-    Parámetros:
-    dialog (QDialog, opcional): Un diálogo Qt que muestra el progreso de la instalación.
-    """
-    if not is_elasticsearch_installed():
-        try:
-            if dialog:
-                dialog.setLabelText('Installing Elasticsearch...')
-            install_elasticsearch()
-            update_elastic_config(ELASTICSEARCH_YML)
-            remove_zip(ELASTICSEARCH_ZIP)  # Elimina el .zip de Elasticsearch después de una instalación exitosa
-        except:
-            print("Error when install Elasticsearch")
-    else:
-        print("Elasticsearch is already installed.")
-
-    if not is_kibana_installed():
-        try:
-            if dialog:
-                dialog.setLabelText('Installing Kibana...')
-            install_kibana()
-            update_kibana_config(KIBANA_YML)
-            remove_zip(KIBANA_ZIP)  # Elimina el .zip de Kibana después de una instalación exitosa
-        except:
-            print("Error when install Kibana")
-    else:
-        print("Kibana is already installed.")
-    
-    if dialog:
-        dialog.close()

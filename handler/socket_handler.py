@@ -36,9 +36,9 @@ def start_server():
 
     if host_config != '':
         server_running = True
-        make_socket(host_config, port)
+        __make_socket(host_config, port)
 
-def make_socket(host, port):
+def __make_socket(host, port):
     """
     Crea e inicia un socket de servidor.
 
@@ -64,7 +64,7 @@ def make_socket(host, port):
     while server_running:
         try:
             client_socket, client_address = server_socket.accept()
-            threading.Thread(target=handle_client_init, args=(client_socket, client_address)).start()
+            threading.Thread(target=__handle_client_init, args=(client_socket, client_address)).start()
         except socket.timeout:
             pass
     
@@ -77,7 +77,7 @@ def stop_server():
     global server_running
     server_running = False
     
-def handle_client_init(client_socket, client_address):
+def __handle_client_init(client_socket, client_address):
     """
     Maneja la conexión inicial de un cliente.
 
@@ -101,7 +101,7 @@ def handle_client_init(client_socket, client_address):
             if index['hostname'] == hostname:
                 value = False
         if value:
-            new_client(hostname, client_address, client_socket)
+            __new_client(hostname, client_address, client_socket)
             send_modules_to_client(client_socket)
         else:
             client_socket.send('False'.encode('utf-8'))
@@ -133,7 +133,7 @@ def send_modules_to_client(client_socket):
     # Enviamos los nuevos módulos al cliente
     client_socket.send(f'UPDATE_MODULES{new_modules_json}'.encode('utf-8'))
 
-def generate_token():
+def __generate_token():
     """
     Genera un token único utilizando el módulo uuid.
 
@@ -142,7 +142,7 @@ def generate_token():
     """
     return str(uuid.uuid4())
 
-def new_client(hostname, client_address, client_socket):
+def __new_client(hostname, client_address, client_socket):
     """
     Registra un nuevo cliente en la base de datos y en el diccionario 'clients'.
 
@@ -151,13 +151,13 @@ def new_client(hostname, client_address, client_socket):
         client_address (tuple): La dirección IP y el número de puerto del cliente.
         client_socket (socket.socket): El socket asociado con el cliente.
     """
-    new_token = generate_token()
+    new_token = __generate_token()
     while new_token in clients:  # Asegura que el token no se repita
-        new_token = generate_token()
-    db_register_client(client_address, new_token, client_socket, hostname)
+        new_token = __generate_token()
+    __db_register_client(client_address, new_token, client_socket, hostname)
     client_socket.send(new_token.encode('utf-8'))
 
-def db_register_client(client_address, token, client_socket, hostname):
+def __db_register_client(client_address, token, client_socket, hostname):
     """
     Registra un nuevo cliente en la base de datos y en el diccionario 'clientes'.
 

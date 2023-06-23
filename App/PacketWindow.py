@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel
-from handler.Installer.packet import AgentFilePacket
+from handler.Installer.AgentFilePacket import AgentFilePacket
 
 class PacketWindow(QWidget):
     """
@@ -18,7 +18,7 @@ class PacketWindow(QWidget):
         self.label.setText("Presiona el botón para iniciar la compilación")
         
         self.compile_button = QPushButton("Iniciar compilación")
-        self.compile_button.clicked.connect(self.start_compilation)
+        self.compile_button.clicked.connect(self.__start_compilation)
         
         layout = QVBoxLayout()
         layout.addWidget(self.label)
@@ -26,7 +26,7 @@ class PacketWindow(QWidget):
 
         self.setLayout(layout)
 
-    def start_compilation(self):
+    def __start_compilation(self):
         """
         Inicia la compilación al ser llamado. Cambia el texto del QLabel y desactiva el QPushButton.
         También crea una instancia de la clase AgentFilePacket que lleva a cabo la compilación.

@@ -44,7 +44,7 @@ def check_and_create_index():
 
     return messages
 
-def create_role():
+def create_role(role):
     """
     Crea un nuevo rol en Elasticsearch con el nombre ROL_NAME.
     Este rol tiene los privilegios 'create_doc' e 'index' en el índice INDEX_NAME.
@@ -59,12 +59,12 @@ def create_role():
     }
     
     try:
-        ES.security.put_role(name=ROL_NAME, body=role_definition)
-        print(f"Role {ROL_NAME} has been created successfully.")
+        ES.security.put_role(name=role, body=role_definition)
+        print(f"Role {role} has been created successfully.")
     except es_exceptions.NotFoundError:
-        print(f"Role {ROL_NAME} could not be created.")
+        print(f"Role {role} could not be created.")
 
-def create_user(username, password, roles):
+def create_user(username, password, role):
     """
     Crea un nuevo usuario en Elasticsearch.
 
@@ -76,22 +76,42 @@ def create_user(username, password, roles):
     Devuelve:
         str: un mensaje que indica si el usuario fue creado con éxito o no.
     """
-    user_definition = {
-        "password" : password,
-        "roles" : roles,
-        "full_name" : "User Full Name",
-        "email" : "user@example.com",
-        "metadata" : {
-            "intelligence" : 7
-        },
-        "enabled": True
-    }
-    
+    if not role_exists(role):
+        create_role(role)
+        create_user(username, password, role)
+    else:
+        user_definition = {
+            "password" : password,
+            "roles" : role,
+            "full_name" : "User Full Name",
+            "email" : "user@example.com",
+            "metadata" : {
+                "intelligence" : 7
+            },
+            "enabled": True
+        }
+        
+        try:
+            ES.security.put_user(username=username, body=user_definition)
+            return f"User {username} has been created successfully."
+        except es_exceptions.NotFoundError:
+            return f"User {username} could not be created."
+
+def role_exists(role_name):
+    """
+    Verifica si existe un rol en Elasticsearch.
+
+    Argumentos:
+        role_name (str): el nombre del rol.
+
+    Devuelve:
+        bool: Verdadero si el rol existe, Falso en caso contrario.
+    """
     try:
-        ES.security.put_user(username=username, body=user_definition)
-        return f"User {username} has been created successfully."
+        ES.security.get_role(name=role_name)
+        return True
     except es_exceptions.NotFoundError:
-        return f"User {username} could not be created."
+        return False
 
 def get_doc(module_name, hostname, index_name):
     """

@@ -26,18 +26,18 @@ class ConfigWindow(QDialog):
         self.parent = parent
 
         self.saveButton = QPushButton("Save")
-        self.saveButton.clicked.connect(self.save_config)
+        self.saveButton.clicked.connect(self.__save_config)
 
         self.layout = QVBoxLayout()
 
         self.config_widgets = {}
-        self.load_config()
+        self.__load_config()
 
         self.layout.addWidget(self.saveButton)
 
         self.setLayout(self.layout)
 
-    def load_config(self):
+    def __load_config(self):
         """
         Carga la configuración desde el archivo 'config.json'. Para cada sección de la configuración, se crea un QGroupBox. 
         Dentro de cada QGroupBox, se crea un grid layout y se agregan widgets para cada clave y valor en la sección.
@@ -73,7 +73,7 @@ class ConfigWindow(QDialog):
                 group_box.setLayout(grid_layout)
                 self.layout.addWidget(group_box)
 
-    def save_config(self):
+    def __save_config(self):
         """
         Guarda la configuración en el archivo 'config.json'. Recoge los valores de los widgets y los guarda en el diccionario 
         de configuración. Luego vuelca el diccionario en el archivo de configuración. Después de guardar la configuración, 

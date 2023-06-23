@@ -1,11 +1,14 @@
 """
 Importación de bibliotecas y módulos necesarios
 """
+import time
+import threading
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QInputDialog, QMessageBox, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QAbstractItemView
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QFont
 from datetime import datetime
 import handler.function as function
+from handler.Installer.elk_install import main as elk_install
 from App.ConfigWindow import ConfigWindow
 from App.CertificatesConfigWindow import CertificatesConfigWindow
 from App.InstallDialog import InstallDialog
@@ -14,9 +17,7 @@ from App.PasswordDialog import PasswordDialog
 from App.CreateUserWindow import CreateUserWindow
 from App.PacketWindow import PacketWindow
 from App.HostPolicieWindow import HostPolicieWindow
-from handler.Installer.elk_install import main as elk_install
-import time
-import threading
+
 
 class MyApp(QMainWindow):
     """
@@ -37,6 +38,16 @@ class MyApp(QMainWindow):
         quit(): Este método cierra la aplicación.
     """
 
+    """
+    Clase principal que inicia y controla la interfaz gráfica de la aplicación.
+    """
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = super(MyApp, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+    
     def __init__(self):
         """
         Constructor para la clase MyApp.
@@ -71,24 +82,24 @@ class MyApp(QMainWindow):
         agentMenu = QMenu('Agent Management', self)
         elkMenu = QMenu('Elasticsearch', self)
 
-        optionsMenu.addAction('List connected clients', self.thread_clients)
-        optionsMenu.addAction('Configuration', self.open_config)
-        optionsMenu.addAction('Configuare Certificates', self.config_certs)
-        optionsMenu.addAction('Genearte Packet_Client', self.generate_packetClient)
+        optionsMenu.addAction('List connected clients', self.__thread_clients)
+        optionsMenu.addAction('Configuration', self.__open_config)
+        optionsMenu.addAction('Configuare Certificates', self.__config_certs)
+        optionsMenu.addAction('Genearte Packet_Client', self.__generate_packetClient)
         optionsMenu.addAction('Quit', self.quit)
 
-        agentMenu.addAction('Execute Modules', self.execute_modules)
-        agentMenu.addAction('Update agents', self.update_agents)
-        agentMenu.addAction('Delete agent', self.delete_agent)
-        agentMenu.addAction('Check STICS and Guides', self.thread_full_security)
-        agentMenu.addAction('Check security with custom policies', self.thread_custom_security)
+        agentMenu.addAction('Execute Modules', self.__execute_modules)
+        agentMenu.addAction('Update agents', self.__update_agents)
+        agentMenu.addAction('Delete agent', self.__delete_agent)
+        agentMenu.addAction('Check STICS and Guides', self.__thread_full_security)
+        agentMenu.addAction('Check security with custom policies', self.__thread_custom_security)
 
-        elkMenu.addAction('Start Elasticsearch', self.start_elasticsearch)
-        elkMenu.addAction('Start Kibana', self.start_kibana)
-        elkMenu.addAction('Check Index', self.check_index)
-        elkMenu.addAction('Configure Elasticsearch password', self.elasticsearch_password)
-        elkMenu.addAction('Configure Kibana System password', self.kibana_password)
-        elkMenu.addAction('Create User for client', self.create_user)
+        elkMenu.addAction('Start Elasticsearch', self.__start_elasticsearch)
+        elkMenu.addAction('Start Kibana', self.__start_kibana)
+        elkMenu.addAction('Check Index', self.__check_index)
+        elkMenu.addAction('Configure Elasticsearch password', self.__elasticsearch_password)
+        elkMenu.addAction('Configure Kibana System password', self.__kibana_password)
+        elkMenu.addAction('Create User for client', self.__create_user)
 
         menubar.addMenu(optionsMenu)
         menubar.addMenu(agentMenu)
@@ -144,50 +155,51 @@ class MyApp(QMainWindow):
                     if count == 20:
                         break
                 #function.sart_server()
-                self.thread_clients()
+                self.__thread_clients()
                 time.sleep(1)
-                self.thread_full_security()
 
 
                 # Set a timer to update the table every 30 seconds
-                self.timer_clients_online.timeout.connect(self.thread_clients)
+                self.timer_clients_online.timeout.connect(self.__thread_clients)
                 self.timer_clients_online.start(30000) # 30000 ms = 30 seconds
 
                 # Set a timer to update the table every 30 seconds
-                self.timer_last_update.timeout.connect(self.update_agents)
+                self.timer_last_update.timeout.connect(self.__update_agents)
                 self.timer_last_update.start(30000) # 30000 ms = 30 seconds
 
-    def thread_clients(self):
+
+
+    def __thread_clients(self):
         """
         Inicia un nuevo hilo para listar los clientes.
 
         Este método crea e inicia un nuevo hilo que llama a la función list_clients() de la clase.
         """
-        list_clients_thread = threading.Thread(target=self.list_clients).start()
+        list_clients_thread = threading.Thread(target=self.__list_clients).start()
 
-    def thread_full_security(self):
+    def __thread_full_security(self):
         """
         Inicia un nuevo hilo para verificar la seguridad completa y luego colorea las celdas de cumplimiento.
 
         Este método crea e inicia un nuevo hilo que llama a la función check_full_security() de la clase, 
         espera durante tres segundos, y luego llama a la función color_compliance_cells() para colorear las celdas de cumplimiento.
         """
-        check_security_thread = threading.Thread(target=self.check_full_security).start()
+        check_security_thread = threading.Thread(target=self.__check_full_security).start()
         time.sleep(3)
-        self.color_compliance_cells()
+        self.__color_compliance_cells()
     
-    def thread_custom_security(self):
+    def __thread_custom_security(self):
         """
         Inicia un nuevo hilo para verificar la seguridad personalizada y luego colorea las celdas de cumplimiento.
 
         Este método crea e inicia un nuevo hilo que llama a la función check_custom_security() de la clase, 
         espera durante tres segundos, y luego llama a la función color_compliance_cells() para colorear las celdas de cumplimiento.
         """
-        check_security_thread = threading.Thread(target=self.check_custom_security).start()
+        check_security_thread = threading.Thread(target=self.__check_custom_security).start()
         time.sleep(3)
-        self.color_compliance_cells()
+        self.__color_compliance_cells()
     
-    def list_clients(self):
+    def __list_clients(self):
         """
         Lista los clientes y actualiza la tabla en la interfaz de usuario.
 
@@ -202,7 +214,7 @@ class MyApp(QMainWindow):
 #            online_status = QIcon(QPixmap("./App/icons/online.png") if client_data['result'] else QIcon(QPixmap("./App/icons/offline.png")))
             
             # Find row by IP
-            row = self.get_row_by_ip(client_data['address'])
+            row = self.__get_row_by_ip(client_data['address'])
 
             # If row doesn't exist, add a new row
             if row is None:
@@ -225,7 +237,7 @@ class MyApp(QMainWindow):
             
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-    def check_full_security(self):
+    def __check_full_security(self):
         """
         Verifica la seguridad completa.
 
@@ -234,7 +246,7 @@ class MyApp(QMainWindow):
         """
         function.check_security(parameter='full')
     
-    def check_custom_security(self):
+    def __check_custom_security(self):
         """
         Verifica la seguridad personalizada.
 
@@ -243,7 +255,7 @@ class MyApp(QMainWindow):
         """
         function.check_security(parameter='custom')
 
-    def open_config(self):
+    def __open_config(self):
         """
         Abre la ventana de configuración.
 
@@ -252,7 +264,7 @@ class MyApp(QMainWindow):
         self.configWindow = ConfigWindow(self)
         self.configWindow.show()
 
-    def config_certs(self):
+    def __config_certs(self):
         """
         Abre la ventana de configuración de certificados.
 
@@ -261,7 +273,7 @@ class MyApp(QMainWindow):
         self.certsConfigWindow = CertificatesConfigWindow(self)
         self.certsConfigWindow.show()
 
-    def execute_modules(self):
+    def __execute_modules(self):
         """
         Ejecuta los módulos y actualiza la tabla en la interfaz de usuario.
 
@@ -275,14 +287,14 @@ class MyApp(QMainWindow):
         for token, client_data in result.items():
             if client_data['result']:  # if the result is True
                 current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # get current date and time
-                row = self.get_row_by_hostname(client_data['hostname'])  # find the row of the agent by hostname
+                row = self.__get_row_by_hostname(client_data['hostname'])  # find the row of the agent by hostname
                 if row is not None:
                     self.tableWidget.setItem(row, 3, QTableWidgetItem(current_datetime))  # update the 'last_check' cell
         
         time.sleep(2)
-        self.check_full_security()
+        self.__check_full_security()
 
-    def update_agents(self):
+    def __update_agents(self):
         """
         Actualiza los agentes y actualiza la tabla en la interfaz de usuario.
 
@@ -304,11 +316,11 @@ class MyApp(QMainWindow):
             for token, client_data in result.items():
                 if client_data['result']:  # if the result is True
                     current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # get current date and time
-                    row = self.get_row_by_hostname(client_data['hostname'])  # find the row of the agent by hostname
+                    row = self.__get_row_by_hostname(client_data['hostname'])  # find the row of the agent by hostname
                     if row is not None:
                         self.tableWidget.setItem(row, 4, QTableWidgetItem(current_datetime))  # update the 'last_check' cell
 
-    def get_row_by_hostname(self, hostname):
+    def __get_row_by_hostname(self, hostname):
         """
         Devuelve el índice de la fila que corresponde al nombre de host dado.
 
@@ -326,7 +338,7 @@ class MyApp(QMainWindow):
         # Return None if no matching hostname is found
         return None
 
-    def get_row_by_ip(self, ip):
+    def __get_row_by_ip(self, ip):
         """
         Devuelve el índice de la fila que corresponde a la IP dada.
 
@@ -341,7 +353,7 @@ class MyApp(QMainWindow):
                 return row
         return None
 
-    def delete_agent(self):
+    def __delete_agent(self):
         """
         Elimina un agente.
 
@@ -359,12 +371,12 @@ class MyApp(QMainWindow):
             if result:
                 QMessageBox.information(self, 'Delete Agent', 'Agent deleted')
                 # Remove the agent from the table
-                row = self.get_row_by_hostname(hostname)
+                row = self.__get_row_by_hostname(hostname)
                 if row is not None:
                     self.tableWidget.removeRow(row)
             else:
                 QMessageBox.information(self, 'Delete Agent', 'Error')
-        self.list_clients()
+        self.__list_clients()
 
     def closeEvent(self, event):
         """
@@ -383,7 +395,7 @@ class MyApp(QMainWindow):
         else:
             event.ignore()  # ignore the event
 
-    def elasticsearch_password(self):
+    def __elasticsearch_password(self):
         """
         Intenta resetear la contraseña de Elasticsearch.
 
@@ -397,7 +409,7 @@ class MyApp(QMainWindow):
         except:
             print("Error, you should first configure Elasticsearch before executing this action")
 
-    def kibana_password(self):
+    def __kibana_password(self):
         """
         Intenta resetear la contraseña de Kibana y muestra un cuadro de diálogo de contraseña.
 
@@ -412,7 +424,7 @@ class MyApp(QMainWindow):
         except:
             print("Error, you should first configure Elasticsearch before executing this action")
 
-    def start_elasticsearch(self):
+    def __start_elasticsearch(self):
         """
         Inicia Elasticsearch.
 
@@ -420,7 +432,7 @@ class MyApp(QMainWindow):
         """
         function.start_elasticsearch()
 
-    def start_kibana(self):
+    def __start_kibana(self):
         """
         Inicia Kibana.
 
@@ -428,7 +440,7 @@ class MyApp(QMainWindow):
         """
         function.start_kibana()
 
-    def check_index(self):
+    def __check_index(self):
         """
         Verifica e intenta crear los índices en Elasticsearch.
 
@@ -445,7 +457,7 @@ class MyApp(QMainWindow):
                 elif "ya existe" in result:
                     QMessageBox.information(self, 'Información', result)
 
-    def create_user(self):
+    def __create_user(self):
         """
         Abre la ventana de creación de usuario.
 
@@ -454,7 +466,7 @@ class MyApp(QMainWindow):
         self.createUserWindow = CreateUserWindow()
         self.createUserWindow.show()
     
-    def generate_packetClient(self):
+    def __generate_packetClient(self):
         """
         Abre la ventana de PacketWindow.
 
@@ -463,7 +475,7 @@ class MyApp(QMainWindow):
         self.window = PacketWindow()
         self.window.show()
     
-    def color_compliance_cells(self):
+    def __color_compliance_cells(self):
         """
         Colorea las celdas de la columna 'Compliance STICS'.
         
@@ -503,7 +515,6 @@ class MyApp(QMainWindow):
                 item.setFont(font)  # set font
                 item.setTextAlignment(Qt.AlignCenter)
                 self.tableWidget.setItem(row, 5, item)
-                self.tableWidget.cellClicked.connect(self.open_host_policie_window)
             
             # Obtiene el nivel de cumplimiento custom para el hostname actual
             level_custom = function.get_compliance_custom(hostname)
@@ -516,11 +527,11 @@ class MyApp(QMainWindow):
                 item.setFont(font)  # set font
                 item.setTextAlignment(Qt.AlignCenter)
                 self.tableWidget.setItem(row, 6, item)
-                self.tableWidget.cellClicked.connect(self.open_host_policie_window)
             else:
                 self.tableWidget.setItem(row, 6, None)
+        self.tableWidget.cellClicked.connect(self.__open_host_policie_window)
 
-    def open_host_policie_window(self, row, column):
+    def __open_host_policie_window(self, row):
         """
         Abre la ventana de políticas del host cuando se hace clic en una celda.
         
@@ -551,10 +562,9 @@ class MyApp(QMainWindow):
         Este método detiene el servidor y cierra la aplicación. Se llama cuando se selecciona 
         la opción de salir en el menú de la aplicación o cuando se cierra la ventana principal.
         """
+#        self.closeEvent(self.event)
         reply = QMessageBox.question(self, 'Menssage', 'Are you sure you want to shut down the server? (y/n): ', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             function.stop_server()
             QApplication.instance().quit()
     
-
-

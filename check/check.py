@@ -24,12 +24,12 @@ def recived_doc(doc_file, policie, hostname):
         Un tuple que contiene el número de incidencias de baja, media y alta seguridad, 
         así como el estado de seguridad del equipo en esa política concreta.
     """
-    template = read_template(policie)
-    policie_instance = import_policie_module(policie, doc_file, template)
+    template = __read_template(policie)
+    policie_instance = __import_policie_module(policie, doc_file, template)
     doc_low, doc_medium, doc_high, doc_security_status = policie_instance.get_result() 
     return doc_low, doc_medium, doc_high, doc_security_status
 
-def read_template(policie):
+def __read_template(policie):
     """
     Lee el archivo de plantilla JSON para una política específica.
 
@@ -46,7 +46,7 @@ def read_template(policie):
     with open(os.path.join(TEMPLATE_PATH, f'{policie}.json'), "r") as f:
         return json.load(f)
 
-def import_policie_module(policie, doc_file, template):
+def __import_policie_module(policie, doc_file, template):
     """
     Importa el módulo de política especificado y crea una instancia de la clase de política.
 

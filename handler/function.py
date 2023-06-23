@@ -45,22 +45,6 @@ def get_list_clients():
     online_clients = socket_handler.sendToEveryClient(content)
     return online_clients
 
-def confirm_exit():
-    """
-    Pide una confirmación de cierre del servidor al usuario. Esta función no está en uso en MyApp.
-
-    Devuelve:
-        bool: Verdadero si el usuario confirma el cierre del servidor, Falso de lo contrario.
-    """
-    while True:
-        confirmacion = input("Are you sure you want to shut down the server? (y/n): ").lower()
-        if confirmacion == "y":
-            return True
-        elif confirmacion == "n":
-            return False
-        else:
-            print("Invalid option. Please try again.")
-
 def excute_modules():
     """
     Envia la señal 'exec_modules' a todos los clientes conectados.

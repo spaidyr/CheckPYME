@@ -8,7 +8,7 @@
     ],
     "modules": [
         {
-            "PasswordPolicies": "true"
+            "PasswordPolicies": "false"
         }
     ]
 }

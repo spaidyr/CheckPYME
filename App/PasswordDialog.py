@@ -8,7 +8,7 @@ class PasswordDialog(QDialog):
     """
     def __init__(self):
         """
-        Initializes the PasswordDialog with a QLineEdit for password input and a submit QPushButton.
+        Inicializa el PasswordDialog con un QLineEdit para introducir la contraseña y un QPushButton para enviar.
         """
         super().__init__()
 
@@ -18,7 +18,7 @@ class PasswordDialog(QDialog):
         self.password_line_edit.setEchoMode(QLineEdit.Password)
 
         self.submit_button = QPushButton("Submit")
-        self.submit_button.clicked.connect(self.submit)
+        self.submit_button.clicked.connect(self.__submit)
 
         layout = QVBoxLayout()
         layout.addWidget(QLabel("Por favor, introduzca la contraseña para el usuario kibana_system:"))
@@ -27,22 +27,22 @@ class PasswordDialog(QDialog):
 
         self.setLayout(layout)
 
-    def submit(self):
+    def __submit(self):
         """
-        Retrieves the text from the QLineEdit and calls the modify_yml method to update the password in the YML file.
-        Finally, closes the dialog.
+        Obtiene el texto del QLineEdit y llama al método modify_yml para actualizar la contraseña en el archivo YML.
+        Finalmente, cierra el diálogo.
         """
         password = self.password_line_edit.text()
 
-        self.modify_yml(password)
+        self.__modify_yml(password)
         self.close()
 
-    def modify_yml(self, password):
+    def __modify_yml(self, password):
         """
-        Modifies the Kibana YML configuration file to replace the old password with the new one.
+        Modifica el archivo de configuración YML de Kibana para reemplazar la contraseña antigua por la nueva.
 
         Args:
-            password (str): The new password to be set.
+            password (str): La nueva contraseña a establecer.
         """
         # Read the YML file
         with open(KIBANA_YML, 'r') as file:

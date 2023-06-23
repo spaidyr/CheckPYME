@@ -1,7 +1,7 @@
 import json
+import re
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QTableWidget, QTableWidgetItem, QLineEdit, QMessageBox
 from handler.function import generate_certificates, copy_file as copy_cert
-import re
 
 class CertificatesConfigWindow(QMainWindow):
     """
@@ -37,13 +37,13 @@ class CertificatesConfigWindow(QMainWindow):
         self.tables = []  # keep track of tables for saving later
         for cert_type in ['ca', 'client', 'server']:
             self.layout.addWidget(QLabel(cert_type.upper()))
-            table = self.create_table(self.config[cert_type])
+            table = self.__create_table(self.config[cert_type])
             self.tables.append((cert_type, table))  # add table to tables list
             self.layout.addWidget(table)
 
         # Create save button
         save_button = QPushButton('Save')
-        save_button.clicked.connect(self.save_config)
+        save_button.clicked.connect(self.__save_config)
         self.layout.addWidget(save_button)
 
         # Set layout
@@ -51,7 +51,9 @@ class CertificatesConfigWindow(QMainWindow):
         centralWidget.setLayout(self.layout)
         self.setCentralWidget(centralWidget)
 
-    def create_table(self, config):
+        self._initialized = True
+
+    def __create_table(self, config):
         """
         Crea una tabla QTableWidget para mostrar las claves y valores de una configuración de certificados.
         La tabla tiene tantas filas como elementos en la configuración y dos columnas para 'Key' y 'Value'. 
@@ -84,7 +86,7 @@ class CertificatesConfigWindow(QMainWindow):
 
         return table
 
-    def save_config(self):
+    def __save_config(self):
         """
         Guarda la configuración en el archivo 'config.json'. Recoge los valores de las celdas de las tablas y los guarda en el diccionario 
         de configuración. Luego vuelca el diccionario en el archivo de configuración. Después de guardar la configuración, muestra un cuadro 
@@ -99,7 +101,7 @@ class CertificatesConfigWindow(QMainWindow):
             json.dump(self.config, f)
 
         reply = QMessageBox.question(self, 'Generate Certificates', 
-            "Would you like to generate new certificates?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            "¿Te gustaría generar nuevos certificados?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
             generate_certificates()
@@ -109,5 +111,5 @@ class CertificatesConfigWindow(QMainWindow):
             copy_cert("./certs/server/server.crt", "C:\\Elastic\\Kibana\\8.8.0\\kibana-8.8.0\\config\server.crt")
             copy_cert("./certs/server/server.key", "C:\\Elastic\\Elasticsearch\\8.8.0\\elasticsearch-8.8.0\\config\server.key")
             copy_cert("./certs/server/server.key", "C:\\Elastic\\Kibana\\8.8.0\\kibana-8.8.0\\config\server.key")
-
+            QMessageBox.warning(self, 'Reinicio recomendado', 'Se recomiendo reiniciar la aplicación para inicializar el handler del servidor')
         self.close()

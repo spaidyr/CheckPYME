@@ -36,13 +36,13 @@ class AgentFilePacket:
         """
         El constructor de la clase AgentFilePacket.
         """
-        if self.check_files_exist():
-            self.update_source_paths_in_iss('handler/Installer/setup.iss')
-            self.exec_innoSetup()
+        if self.__check_files_exist():
+            self.__update_source_paths_in_iss('handler/Installer/setup.iss')
+            self.__exec_innoSetup()
         else:
             pass  # Implementa lo que quieras hacer si los archivos NO existen.
 
-    def check_files_exist(self):
+    def __check_files_exist(self):
         """
         Verifica la existencia de archivos y directorios específicos en la estructura de archivos del Agente.
         
@@ -56,12 +56,10 @@ class AgentFilePacket:
             'certs/ca.crt',
             'certs/client.crt',
             'certs/client.key',
-            'modules',
             'agent.json',
             'client.py',
             'checkpyme.py',
             'config.json',
-            'icon.ico',
             'elk_credentials.txt'
         ]
 
@@ -118,7 +116,7 @@ class AgentFilePacket:
         except Exception as e:
             print(f"Ha ocurrido un error al copiar el archivo: {e}")       
 
-    def exec_innoSetup(self):
+    def __exec_innoSetup(self):
         """
         Ejecuta el instalador Inno Setup si se encuentra en la ruta especificada.
         """
@@ -129,7 +127,7 @@ class AgentFilePacket:
         subprocess.run(f'{inno_setup_path} /Qp {iss_script_path}', shell=True)
     
 
-    def update_source_paths_in_iss(self, iss_filepath):
+    def __update_source_paths_in_iss(self, iss_filepath):
         """
         Actualiza las rutas de origen en el archivo Inno Setup Script (.iss) con la ruta del directorio de trabajo actual.
 

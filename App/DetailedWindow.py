@@ -32,9 +32,9 @@ class DetailedWindow(QDialog):
         super().__init__()
         self.hostname = hostname
         self.module_key = module_key
-        self.initUI()
+        self.__initUI()
 
-    def initUI(self):
+    def __initUI(self):
         """
         Inicializa la interfaz de usuario para la ventana de diálogo. Esta interfaz consiste en una tabla
         que muestra las políticas del módulo y su estado para el host y el módulo seleccionados y una serie 
@@ -105,9 +105,9 @@ class DetailedWindow(QDialog):
         booleans_medium = get_booleans(self.hostname, self.module_key, security_level="medium")
         booleans_high = get_booleans(self.hostname, self.module_key, security_level="high")
 
-        percent_low = QLabel(f"{self.get_true_percentage(booleans_low):.2f}%")
-        percent_medium = QLabel(f"{self.get_true_percentage(booleans_medium):.2f}%")
-        percent_high = QLabel(f"{self.get_true_percentage(booleans_high):.2f}%")
+        percent_low = QLabel(f"{self.__get_true_percentage(booleans_low):.2f}%")
+        percent_medium = QLabel(f"{self.__get_true_percentage(booleans_medium):.2f}%")
+        percent_high = QLabel(f"{self.__get_true_percentage(booleans_high):.2f}%")
 
         # Agrega widgets a las celdas del layout
         grid_Title.addWidget(texto, 0, 0)
@@ -126,7 +126,7 @@ class DetailedWindow(QDialog):
 
         self.setLayout(vbox)
 
-    def get_true_percentage(self, count_dict):
+    def __get_true_percentage(self, count_dict):
         """
         Calcula el porcentaje de elementos con valor True en el diccionario proporcionado.
 

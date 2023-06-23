@@ -87,6 +87,7 @@ def handle_server_request(server_socket):
         if response.startswith('UPDATE_MODULES'):
             new_modules_data = response.split('UPDATE_MODULES')[1]
             update_modules(new_modules_data)
+            load_modules()
         server_socket.send('Success'.encode('utf-8'))
     server_socket.close()
 
@@ -107,12 +108,11 @@ def handle_server_response(client_socket, token, hostname):
             store_encrypted_token(response)
             print(f'Token actualizado: {response}')
     
-    response = client_socket.recv(10240).decode('utf-8')
-    if response.startswith('UPDATE_MODULES'):
-        new_modules_data = response.split('UPDATE_MODULES')[1]
-        update_modules(new_modules_data)
-    else:
-        load_modules()
+        response = client_socket.recv(10240).decode('utf-8')
+        if response.startswith('UPDATE_MODULES'):
+            new_modules_data = response.split('UPDATE_MODULES')[1]
+            update_modules(new_modules_data)
+            load_modules()
 
     client_socket.close()
 

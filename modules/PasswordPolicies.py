@@ -42,7 +42,8 @@ class PasswordPolicies():
                 'MaximumPasswordAge', 
                 'MinimumPasswordLength', 
                 'PasswordComplexity', 
-                'PasswordHistorySize']
+                'PasswordHistorySize',
+                'ClearTextPassword']
         
         values = {}
         if secpol.has_section(section):

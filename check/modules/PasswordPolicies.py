@@ -70,7 +70,9 @@ class PasswordPolicies:
             for key in common_keys:
                 # Compara todos y crea un doc por cada nivel de seguridad
                 if key == "MaximumPasswordAge":
-                   comparison_dict_copy[key] = source_content[key] <= self.template[security_level][0][key]
+                    comparison_dict_copy[key] = source_content[key] <= self.template[security_level][0][key]
+                elif key == "ClearTextPassword":
+                    comparison_dict_copy[key] = source_content[key] == self.template[security_level][0][key]
                 else:
                     comparison_dict_copy[key] = source_content[key] >= self.template[security_level][0][key]
             # Asigna el diccionario modificado al atributo correspondiente
@@ -86,6 +88,9 @@ class PasswordPolicies:
             for security_level in ["low", "medium", "high"]:
                 if key == "MaximumPasswordAge":
                     if source_content[key] <= self.template[security_level][0][key]:
+                        comparison_dict[key] = security_level
+                elif key == "ClearTextPassword":
+                    if source_content[key] == self.template[security_level][0][key]:
                         comparison_dict[key] = security_level
                 else:
                     if source_content[key] >= self.template[security_level][0][key]:

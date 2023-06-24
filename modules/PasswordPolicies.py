@@ -3,10 +3,14 @@ from datetime import datetime
 import platform
 import re
 import pytz
+import configparser
+
+SECPOL_PATH = "C:\\TEMP\\secpol.inf"
 
 class PasswordPolicies():
 
     def __init__(self) -> dict:
+
         self.result = {}
         name = 'PasswordPolicies'
         self.result['module_name'] = name
@@ -17,34 +21,35 @@ class PasswordPolicies():
 
     def check(self):
 
-        # Definimos las claves en inglés correspondientes a cada posición
-        key_names_eng = [
-            'Force logoff after',
-            'Min password age (days)',
-            'Max password age (days)',
-            'Min password length',
-            'Length of password history maintained',
-            'Lockout threshold',
-            'Lockout duration (minutes)',
-            'Lockout observation window (minutes)',
-            'Computer role'
-        ]
-
         try:
-            output = subprocess.run('net accounts', capture_output=True, text=True)
-            lines = output.stdout.split('\n')
-
-            data_lines = [line for line in lines if re.search(r':', line)]  # Solo las líneas con datos
-            for i, item in enumerate(data_lines):
-
-                # Buscamos el valor usando una expresión regular
-                match = re.search(r':\s+(.+)$', item)
-
-                if match:
-                    value = match.group(1)
-                    key_eng = key_names_eng[i]  # Asignamos la clave en inglés correspondiente a esta posición
-                    self.result[key_eng] = value
-                
-        except subprocess.CalledProcessError as e:
-            print(f"Error al ejecutar el comando: {e}")
+            policy_values = self.__read_secpol()
+            for key, value in policy_values.items():
+                self.result[key] = value
+        except:
+            pass
         return self.result
+
+    def __read_secpol(self):
+        secpol = configparser.ConfigParser()
+        secpol.optionxform = str  # Conservar la capitalización de las claves
+        
+        with open(SECPOL_PATH, 'rb') as f:
+            content = f.read().decode('utf-16')
+
+        secpol.read_string(content)
+
+        section = 'System Access'
+        keys = ['MinimumPasswordAge', 
+                'MaximumPasswordAge', 
+                'MinimumPasswordLength', 
+                'PasswordComplexity', 
+                'PasswordHistorySize']
+        
+        values = {}
+        if secpol.has_section(section):
+            for key in keys:
+                if secpol.has_option(section, key):
+                    values[key] = secpol.getint(section, key)
+        
+        return values
+        

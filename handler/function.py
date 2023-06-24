@@ -270,13 +270,15 @@ def set_doc_iterator(module_list):
     """
     for policie in module_list:
             for client, client_data in clients.items():
-                doc_file = elk.get_doc(policie, client_data["hostname"], INDEX_NAME)
-                doc_low, doc_medium, doc_high, doc_security_status = analize(doc_file, policie, client_data["hostname"])
-                elk.set_doc(doc_low, INDEX_RESULT)
-                elk.set_doc(doc_medium, INDEX_RESULT)
-                elk.set_doc(doc_high, INDEX_RESULT)
-                elk.set_doc(doc_security_status, INDEX_STATUS)
-
+                try:
+                    doc_file = elk.get_doc(policie, client_data["hostname"], INDEX_NAME)
+                    doc_low, doc_medium, doc_high, doc_security_status = analize(doc_file, policie, client_data["hostname"])
+                    elk.set_doc(doc_low, INDEX_RESULT)
+                    elk.set_doc(doc_medium, INDEX_RESULT)
+                    elk.set_doc(doc_high, INDEX_RESULT)
+                    elk.set_doc(doc_security_status, INDEX_STATUS)
+                except:
+                    print(f'NO SE ENCONTRÓ DOCUMENTO PARA {client_data["hostname"]}')
 def get_compliance_full(hostname):
     """
     Realiza la conformidad STIC para un host dado.

@@ -20,11 +20,11 @@ class PasswordPolicies:
     def check(self):
 
         # Remove the '_source' key from doc_file
-        source_content = self.doc_file.pop('_source')
-
-        # Translate "NUNCA" and "Ninguna" to "0"
-        source_content = self.translate_values(source_content)
+        source_content = self.doc_file['_source']
         
+        # Translate "NUNCA" and "Ninguna" to "0"
+        #source_content = self.translate_values(source_content)
+
         # Create a new dictionary with the first three parameters
         result_dict = {
             "module_name": source_content["module_name"],
@@ -48,9 +48,6 @@ class PasswordPolicies:
         comparison_dict01 = result_dict.copy()
         comparison_dict02 = result_dict.copy()
         
-        for key in common_keys:
-            comparison_dict02[key] = "None"
-        
         self.comparision(comparison_dict01, source_content, common_keys)
         self.full_comparision(comparison_dict02, source_content, common_keys)
         
@@ -67,25 +64,45 @@ class PasswordPolicies:
 
     
     def comparision(self, comparison_dict, source_content, common_keys):
+
         for security_level in ["low", "medium", "high"]:
             # Crea una copia de comparison_dict para cada nivel de seguridad
             comparison_dict_copy = comparison_dict.copy()
-
             # Añade la etiqueta del nivel de seguridad
             comparison_dict_copy["security_level"] = security_level
-
             for key in common_keys:
                 # Compara todos y crea un doc por cada nivel de seguridad
-                comparison_dict_copy[key] = source_content[key] >= self.template[security_level][0][key]
-
+                if key == "MaximumPasswordAge":
+                    if security_level == "low":
+                        comparison_dict_copy[key] = 60 < source_content[key] <= self.template[security_level][0][key]
+                    elif security_level == "medium":
+                        comparison_dict_copy[key] = 45 < source_content[key] <= self.template[security_level][0][key]
+                    else:
+                        comparison_dict_copy[key] = source_content[key] <= self.template[security_level][0][key]
+                else:
+                    comparison_dict_copy[key] = source_content[key] >= self.template[security_level][0][key]
             # Asigna el diccionario modificado al atributo correspondiente
             setattr(self, f"doc_{security_level}", comparison_dict_copy)
     
     def full_comparision (self, comparison_dict, source_content, common_keys):
+        
+        for key in common_keys:
+            comparison_dict[key] = "None"
+        
         comparison_dict["security_level"] = "security_status"
         for key in common_keys:
             for security_level in ["low", "medium", "high"]:
-                if source_content[key] >= self.template[security_level][0][key]:
-                    comparison_dict[key] = security_level
+                if key == "MaximumPasswordAge":
+                    if 60 < source_content[key] <= self.template[security_level][0][key]:
+                        comparison_dict[key] = "low"
+                    elif 45 < source_content[key] <= self.template[security_level][0][key]:
+                        comparison_dict[key] = "medium"
+                    elif source_content[key] <= self.template[security_level][0][key]:
+                        comparison_dict[key] = "high"
+                    else:
+                        comparison_dict[key] = "None"
+                else:
+                    if source_content[key] >= self.template[security_level][0][key]:
+                        comparison_dict[key] = security_level
         self.doc_security_status.update(comparison_dict)
 

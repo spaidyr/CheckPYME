@@ -1,4 +1,3 @@
-import subprocess
 from datetime import datetime
 import platform
 import re

@@ -1,0 +1,23 @@
+{
+    "low": [
+        {
+            "Lockout threshold" : 8,
+            "Lockout duration (minutes)" : 30,
+            "Lockout observation window (minutes)" : 30
+        }
+    ],
+    "medium": [
+        {
+            "Lockout threshold" : 8,
+            "Lockout duration (minutes)" : 30,
+            "Lockout observation window (minutes)" : 30
+        }
+    ],
+    "high": [
+        {
+            "Lockout threshold" : 8,
+            "Lockout duration (minutes)" : 0,
+            "Lockout observation window (minutes)" : 30
+        }
+    ]
+}

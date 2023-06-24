@@ -1,6 +1,6 @@
 
 
-class PasswordPolicies:
+class AccountsPolicies:
 
     def __init__(self, doc_file, template):
         self.template = template
@@ -20,7 +20,7 @@ class PasswordPolicies:
         source_content = self.doc_file['_source']
         
         # Translate "NUNCA" and "Ninguna" to "0"
-        #source_content = self.translate_values(source_content)
+        source_content = self.translate_values(source_content)
 
         # Create a new dictionary with the first three parameters
         result_dict = {
@@ -56,7 +56,7 @@ class PasswordPolicies:
             elif isinstance(value, str):
                 # Comprueba si el valor es una cadena antes de compararlo con "Nunca" o "Ninguna"
                 if value == "Nunca" or value == "Ninguna":
-                    dictionary[key] = "0"
+                    dictionary[key] = 0
         return dictionary
 
     
@@ -69,10 +69,10 @@ class PasswordPolicies:
             comparison_dict_copy["security_level"] = security_level
             for key in common_keys:
                 # Compara todos y crea un doc por cada nivel de seguridad
-                if key == "MaximumPasswordAge":
-                   comparison_dict_copy[key] = source_content[key] <= self.template[security_level][0][key]
+                if key == "Lockout threshold":
+                   comparison_dict_copy[key] = source_content[key] >= self.template[security_level][0][key]
                 else:
-                    comparison_dict_copy[key] = source_content[key] >= self.template[security_level][0][key]
+                    comparison_dict_copy[key] = source_content[key] <= self.template[security_level][0][key]
             # Asigna el diccionario modificado al atributo correspondiente
             setattr(self, f"doc_{security_level}", comparison_dict_copy)
     
@@ -84,11 +84,11 @@ class PasswordPolicies:
         comparison_dict["security_level"] = "security_status"
         for key in common_keys:
             for security_level in ["low", "medium", "high"]:
-                if key == "MaximumPasswordAge":
-                    if source_content[key] <= self.template[security_level][0][key]:
+                if key == "Lockout threshold":
+                    if source_content[key] >= self.template[security_level][0][key]:
                         comparison_dict[key] = security_level
                 else:
-                    if source_content[key] >= self.template[security_level][0][key]:
+                    if source_content[key] <= self.template[security_level][0][key]:
                         comparison_dict[key] = security_level
         self.doc_security_status.update(comparison_dict)
 

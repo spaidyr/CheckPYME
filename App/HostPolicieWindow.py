@@ -53,7 +53,7 @@ class HostPolicieWindow(QDialog):
         modules = config['modules']
 
         # Crea una tabla con tantas filas como módulos y 2 columnas
-        self.table = QTableWidget(len(modules), 2)
+        self.table = QTableWidget(len(modules[0]), 2)
 
         # Establece los encabezados de las columnas
         self.table.setHorizontalHeaderLabels(["Module", "Status"])
@@ -67,8 +67,8 @@ class HostPolicieWindow(QDialog):
         }
 
         # Rellena la tabla con los datos de los módulos
-        for i, module in enumerate(modules):
-            for key, value in module.items():
+        for module in modules:
+            for i, (key, value) in enumerate(module.items()):
                 value = get_value(key, self.hostname)
 
                 # Añade el nombre del módulo y su estado a la fila correspondiente

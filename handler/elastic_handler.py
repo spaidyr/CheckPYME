@@ -138,8 +138,10 @@ def get_doc(module_name, hostname, index_name):
         "size": 1
     }
 
-    response = ES.search(index=index_name, body=query)  # Cambiado el índice a "checkpyme"
-
+    try: 
+        response = ES.search(index=index_name, body=query)  # Cambiado el índice a "checkpyme"
+    except:
+        pass
     # Devuelve el último documento indexado si existe
     if response['hits']['hits']:
         return response['hits']['hits'][0]
@@ -172,8 +174,10 @@ def get_security_compliance(module_name, hostname, security_level):
         "size": 1
     }
 
-    response = ES.search(index=INDEX_RESULT, body=query)  # Cambiado el índice a "checkpyme"
-
+    try:
+        response = ES.search(index=INDEX_RESULT, body=query)  # Cambiado el índice a "checkpyme"
+    except:
+        pass
     # Devuelve el último documento indexado si existe
     if response['hits']['hits']:
         return response['hits']['hits'][0]

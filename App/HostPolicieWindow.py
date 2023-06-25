@@ -69,7 +69,10 @@ class HostPolicieWindow(QDialog):
         # Rellena la tabla con los datos de los módulos
         for module in modules:
             for i, (key, value) in enumerate(module.items()):
-                value = get_value(key, self.hostname)
+                try: 
+                    value = get_value(key, self.hostname)
+                except:
+                    pass
 
                 # Añade el nombre del módulo y su estado a la fila correspondiente
                 module_item = QTableWidgetItem(key)
@@ -155,5 +158,7 @@ class HostPolicieWindow(QDialog):
         if column == 1:  # Si se ha hecho clic en la columna de "Status"
             module_item = self.table.item(row, 0)
             module_key = module_item.text() if module_item else ''
-            detailed_window = DetailedWindow(self.hostname, module_key)
-            detailed_window.exec_()
+            value = self.table.item(row, 1)
+            if value.text():
+                detailed_window = DetailedWindow(self.hostname, module_key)
+                detailed_window.exec_()

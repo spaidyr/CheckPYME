@@ -5,12 +5,12 @@ import configparser
 
 SECPOL_PATH = "C:\\TEMP\\secpol.inf"
 
-class PasswordPolicies():
+class AuditPolicies():
 
     def __init__(self) -> dict:
 
         self.result = {}
-        name = 'PasswordPolicies'
+        name = 'AuditPolicies'
         self.result['module_name'] = name
         self.result['hostname'] = platform.node()
         madrid_tz = pytz.timezone('Europe/Madrid')
@@ -36,13 +36,16 @@ class PasswordPolicies():
 
         secpol.read_string(content)
 
-        section = 'System Access'
-        keys = ['MinimumPasswordAge', 
-                'MaximumPasswordAge', 
-                'MinimumPasswordLength', 
-                'PasswordComplexity', 
-                'PasswordHistorySize',
-                'ClearTextPassword']
+        section = 'Event Audit'
+        keys = ["AuditSystemEvents",
+                "AuditLogonEvents",
+                "AuditObjectAcces",
+                "AuditPrivilegeUse",
+                "AuditPolicyChange",
+                "AuditAccountManage",
+                "AuditProcessTracking",
+                "AuditDSAccess",
+                "AuditAccountLogon"]
         
         values = {}
         if secpol.has_section(section):

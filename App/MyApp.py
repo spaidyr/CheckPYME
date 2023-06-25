@@ -187,6 +187,7 @@ class MyApp(QMainWindow):
         check_security_thread = threading.Thread(target=self.__check_full_security).start()
         time.sleep(3)
         self.__color_compliance_cells()
+        
     
     def __thread_custom_security(self):
         """

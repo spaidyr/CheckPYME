@@ -298,8 +298,9 @@ def get_compliance_full(hostname):
         for key in module:
             response = elk.get_doc(key, hostname, INDEX_STATUS)
             # Get the '_source' data
-            counters = get_list_counters(response)
-            total_counters = {key: total_counters[key] + counters[key] for key in total_counters}
+            if response:
+                counters = get_list_counters(response)
+                total_counters = {key: total_counters[key] + counters[key] for key in total_counters}
     
     value = get_min_value(total_counters)
     return value
@@ -322,8 +323,9 @@ def get_compliance_custom(hostname):
             if status.lower() == "true":
                 response = elk.get_doc(key, hostname, INDEX_STATUS)
                 # Get the '_source' data
-                counters = get_list_counters(response)
-                total_counters = {key: total_counters[key] + counters[key] for key in total_counters}
+                if response:
+                    counters = get_list_counters(response)
+                    total_counters = {key: total_counters[key] + counters[key] for key in total_counters}
     value = get_min_value(total_counters)
     return value    
 
@@ -383,10 +385,11 @@ def get_booleans_security(hostname, security_level):
     for module in modules:
         for key in module:
             response = elk.get_security_compliance(key, hostname, security_level)
-            source_data = response.get('_source', {})
-            for value in source_data.values():
-                if value in counters:
-                    counters[value] += 1
+            if response:
+                source_data = response.get('_source', {})
+                for value in source_data.values():
+                    if value in counters:
+                        counters[value] += 1
     return counters
 
 def get_booleans_policie(hostname, policie, security_level):

@@ -160,12 +160,10 @@ cython_debug/
 #.idea/
 
 # CheckPYME path
-client*/
 sqlite/*.db
 certs/*/*.crt
 certs/*/*.key
 Agent/certs/*
-Agent/agent.json
 Agent/elk_credentials.txt
 Agent/modules/*.py
 Agent_Installer/*

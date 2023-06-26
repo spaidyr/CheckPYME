@@ -10,7 +10,8 @@
         {
             "PasswordPolicies": "true",
             "AccountsPolicies": "true",
-            "AuditPolicies": "true"
+            "AuditPolicies": "true",
+            "UserRightsPolicies": "true"
         }
     ]
 }

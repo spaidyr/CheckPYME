@@ -320,6 +320,7 @@ class MyApp(QMainWindow):
                     row = self.__get_row_by_hostname(client_data['hostname'])  # find the row of the agent by hostname
                     if row is not None:
                         self.tableWidget.setItem(row, 4, QTableWidgetItem(current_datetime))  # update the 'last_check' cell
+            self.last_mod_times = check_mod_times
 
     def __get_row_by_hostname(self, hostname):
         """

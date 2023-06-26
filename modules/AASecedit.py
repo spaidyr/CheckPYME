@@ -8,7 +8,7 @@ class AASecedit():
 
     def __init__(self) -> dict:
         self.result = {}
-        name = 'PasswordPolicies'
+        name = 'AASecedit'
         self.result['module_name'] = name
         self.result['hostname'] = platform.node()
         madrid_tz = pytz.timezone('Europe/Madrid')

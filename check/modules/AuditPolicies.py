@@ -1,6 +1,4 @@
-
-
-class AuditPolicies:
+class AuditPolicies():
 
     def __init__(self, doc_file, template):
         self.template = template
@@ -18,9 +16,6 @@ class AuditPolicies:
 
         # Remove the '_source' key from doc_file
         source_content = self.doc_file['_source']
-        
-        # Translate "NUNCA" and "Ninguna" to "0"
-        #source_content = self.translate_values(source_content)
 
         # Create a new dictionary with the first three parameters
         result_dict = {
@@ -47,18 +42,6 @@ class AuditPolicies:
         
         self.comparision(comparison_dict01, source_content, common_keys)
         self.full_comparision(comparison_dict02, source_content, common_keys)
-        
-    def translate_values(self, dictionary):
-        for key, value in dictionary.items():
-            if isinstance(value, dict):
-                # Si el valor es otro diccionario, llama a la función de forma recursiva
-                self.translate_values(value)
-            elif isinstance(value, str):
-                # Comprueba si el valor es una cadena antes de compararlo con "Nunca" o "Ninguna"
-                if value == "Nunca" or value == "Ninguna":
-                    dictionary[key] = "0"
-        return dictionary
-
     
     def comparision(self, comparison_dict, source_content, common_keys):
 

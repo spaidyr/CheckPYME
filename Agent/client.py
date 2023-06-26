@@ -83,7 +83,8 @@ def handle_server_request(server_socket):
         load_modules()
         server_socket.send('Success'.encode('utf-8'))
     elif received_data == "update_modules":
-        response = server_socket.recv(10240).decode('utf-8')
+#        response = server_socket.recv(10240).decode('utf-8')
+        response = __receive_all(server_socket)
         if response.startswith('UPDATE_MODULES'):
             new_modules_data = response.split('UPDATE_MODULES')[1]
             update_modules(new_modules_data)
@@ -107,14 +108,23 @@ def handle_server_response(client_socket, token, hostname):
         else:
             store_encrypted_token(response)
             print(f'Token actualizado: {response}')
-    
-        response = client_socket.recv(10240).decode('utf-8')
+#        response = client_socket.recv(10240).decode('utf-8')
+        response = __receive_all(client_socket)
         if response.startswith('UPDATE_MODULES'):
             new_modules_data = response.split('UPDATE_MODULES')[1]
             update_modules(new_modules_data)
             load_modules()
 
     client_socket.close()
+
+def __receive_all(socket):
+    data = bytearray()
+    while True:
+        part = socket.recv(1024)
+        if not part:
+            break  # El remitente ha cerrado la conexión, no se reciben más datos
+        data.extend(part)
+    return data.decode('utf-8')
 
 # Genera una clave y guárdala en un archivo seguro (solo la primera vez, luego reutiliza la misma clave)
 def generate_key():

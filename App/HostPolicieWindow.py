@@ -72,7 +72,7 @@ class HostPolicieWindow(QDialog):
                 try: 
                     value = get_value(key, self.hostname)
                 except:
-                    pass
+                    value = ""
 
                 # Añade el nombre del módulo y su estado a la fila correspondiente
                 module_item = QTableWidgetItem(key)

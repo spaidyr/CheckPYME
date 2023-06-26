@@ -1,4 +1,4 @@
-class AccountsPolicies:
+class AccountsPolicies():
 
     def __init__(self, doc_file, template):
         self.template = template

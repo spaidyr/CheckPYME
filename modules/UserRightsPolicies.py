@@ -74,6 +74,5 @@ class UserRightsPolicies():
             for key in keys:
                 if secpol.has_option(section, key):
                     values[key] = secpol.get(section, key)
-        print (values)
         return values
         

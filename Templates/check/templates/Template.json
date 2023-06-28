@@ -1,0 +1,23 @@
+{
+    "low": [
+        {
+            "Value_01" : 3,
+            "Value_02" : 3,
+            "Value_03" : 5
+        }
+    ],
+    "medium": [
+        {
+            "Value_01" : 5,
+            "Value_02" : 4,
+            "Value_03" : 4
+        }
+    ],
+    "high": [
+        {
+            "Value_01" : 8,
+            "Value_02" : 5,
+            "Value_03" : 3
+        }
+    ]
+}

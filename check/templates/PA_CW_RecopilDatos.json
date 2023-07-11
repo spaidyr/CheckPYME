@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "No volver a mostrar notificaciones de comentarios" : "Habilitado",
+            "Permitir telemetría" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "No volver a mostrar notificaciones de comentarios" : "Habilitado",
+            "Permitir telemetría" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "No volver a mostrar notificaciones de comentarios" : "Habilitado",
+            "Permitir telemetría" : "Habilitado"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "Configurar SmartScreen de Windows Defender" : "Habilitado",
+            "Elige una de las siguientes opciones:" : "Advertir e impedir la omisión"
+        }
+    ],
+    "medium": [
+        {
+            "Configurar SmartScreen de Windows Defender" : "Habilitado",
+            "Elige una de las siguientes opciones:" : "Advertir e impedir la omisión"
+        }
+    ],
+    "high": [
+        {
+            "Configurar SmartScreen de Windows Defender" : "Habilitado",
+            "Elige una de las siguientes opciones:" : "Advertir e impedir la omisión"
+        }
+    ]
+}

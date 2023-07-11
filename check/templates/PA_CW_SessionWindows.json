@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "Informar cuando el servidor de inicio de sesión no está disponible durante el inicio de sesión del usuario" : "No Configurado",
+            "Mostrar información acerca de inicios de sesión anteriores durante inicio de sesión de usuario" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Informar cuando el servidor de inicio de sesión no está disponible durante el inicio de sesión del usuario" : "Habilitado",
+            "Mostrar información acerca de inicios de sesión anteriores durante inicio de sesión de usuario" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Informar cuando el servidor de inicio de sesión no está disponible durante el inicio de sesión del usuario" : "Habilitado",
+            "Mostrar información acerca de inicios de sesión anteriores durante inicio de sesión de usuario" : "Habilitado"
+        }
+    ]
+}

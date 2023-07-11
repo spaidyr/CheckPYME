@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Permitir algoritmos de criptografía compatibles con Windows NT 40": "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Permitir algoritmos de criptografía compatibles con Windows NT 40": "Deshabilitado"
+        }
+    ],
+    "high": [
+        {
+            "Permitir algoritmos de criptografía compatibles con Windows NT 40": "Deshabilitado"
+        }
+    ]
+}

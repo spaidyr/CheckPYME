@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Desactivar Antivirus de Microsoft Defender" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar Antivirus de Microsoft Defender" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar Antivirus de Microsoft Defender" : "Habilitado"
+        }
+    ]
+}

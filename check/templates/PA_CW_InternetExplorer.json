@@ -1,0 +1,23 @@
+{
+    "low": [
+        {
+            "Activar Sitios sugeridos" : "Deshabilitado",
+            "Impedir administración del filtro SmartScreen" : "Habilitado",
+            "Permitir a los servicios de Microsoft ofrecer sugerencias mejoradas mientras el usuario escribe en la barra de direcciones" : "Deshabilitado"
+        }
+    ],
+    "medium": [
+        {
+            "Activar Sitios sugeridos" : "Deshabilitado",
+            "Impedir administración del filtro SmartScreen" : "Habilitado",
+            "Permitir a los servicios de Microsoft ofrecer sugerencias mejoradas mientras el usuario escribe en la barra de direcciones" : "Deshabilitado"
+        }
+    ],
+    "high": [
+        {
+            "Activar Sitios sugeridos" : "Deshabilitado",
+            "Impedir administración del filtro SmartScreen" : "Deshabilitado",
+            "Permitir a los servicios de Microsoft ofrecer sugerencias mejoradas mientras el usuario escribe en la barra de direcciones" : "Habilitado"
+        }
+    ]
+}

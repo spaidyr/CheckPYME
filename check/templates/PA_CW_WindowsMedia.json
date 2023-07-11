@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Impedir el acceso a Internet de Windows Media DRM" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Impedir el acceso a Internet de Windows Media DRM" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Impedir el acceso a Internet de Windows Media DRM" : "Habilitado"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "No buscar en Internet o mostrar resultados de Internet en Search" : "No Configurado",
+            "Permitir el uso de Cortana" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "No buscar en Internet o mostrar resultados de Internet en Search" : "Habilitado",
+            "Permitir el uso de Cortana" : "Deshabilitado"
+        }
+    ],
+    "high": [
+        {
+            "No buscar en Internet o mostrar resultados de Internet en Search" : "Habilitado",
+            "Permitir el uso de Cortana" : "Deshabilitado"
+        }
+    ]
+}

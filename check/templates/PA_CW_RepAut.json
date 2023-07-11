@@ -1,0 +1,26 @@
+{
+    "low": [
+        {
+            "Desactivar Reproducción automática" : "No Configurado",
+            "Desactivar Reproducción automática en:" : "No Configurado",
+            "Establece el comportamiento predeterminado para ejecución automática." : "No Configurado",
+            "Comportamiento predeterminado de ejecución automática" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar Reproducción automática" : "Habilitado",
+            "Desactivar Reproducción automática en:" : "Todas las unidades",
+            "Establece el comportamiento predeterminado para ejecución automática." : "Habilitado",
+            "Comportamiento predeterminado de ejecución automática" : "No ejecutar ningún comando de ejecución automática"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar Reproducción automática" : "Habilitado",
+            "Desactivar Reproducción automática en:" : "Todas las unidades",
+            "Establece el comportamiento predeterminado para ejecución automática." : "Habilitado",
+            "Comportamiento predeterminado de ejecución automática" : "No ejecutar ningún comando de ejecución automática"
+        }
+    ]
+}

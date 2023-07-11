@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Permitir acceso a shell remoto" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Permitir acceso a shell remoto" : "Deshabilitado"
+        }
+    ],
+    "high": [
+        {
+            "Permitir acceso a shell remoto" : "Deshabilitado"
+        }
+    ]
+}

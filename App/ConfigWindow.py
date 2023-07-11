@@ -1,5 +1,5 @@
 import json
-from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QGroupBox, QCheckBox
+from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QGroupBox, QCheckBox, QFrame
 
 class ConfigWindow(QDialog):
     """
@@ -37,6 +37,10 @@ class ConfigWindow(QDialog):
 
         self.setLayout(self.layout)
 
+        # Limitar la altura y anchura máxima de la ventana
+        self.setMaximumHeight(800)
+        self.setMaximumWidth(1200)
+        
     def __load_config(self):
         """
         Carga la configuración desde el archivo 'config.json'. Para cada sección de la configuración, se crea un QGroupBox. 
@@ -48,27 +52,40 @@ class ConfigWindow(QDialog):
             for section in self.old_config:
                 group_box = QGroupBox(section)
                 grid_layout = QGridLayout()
+
                 row = 0
+                col = 0
 
                 for i, config in enumerate(self.old_config[section]):
                     for config_key, config_value in config.items():
-                        grid_layout.addWidget(QLabel(config_key), row, 0)
+                        grid_layout.addWidget(QLabel(config_key), row, col*4)
 
                         if section == "modules":
                             checkBox = QCheckBox()
                             checkBox.setChecked(config_value.lower() == "true")
                             checkBox.setObjectName(f"{section}_{i}_{config_key}")
-                            grid_layout.addWidget(checkBox, row, 1)
+                            grid_layout.addWidget(checkBox, row, col*4 + 1)
                             
                             self.config_widgets[f"{section}_{i}_{config_key}"] = checkBox
                         else:
                             lineEdit = QLineEdit(str(config_value))
                             lineEdit.setObjectName(f"{section}_{i}_{config_key}")
-                            grid_layout.addWidget(lineEdit, row, 1)
+                            grid_layout.addWidget(lineEdit, row, col*4 + 1)
                             
                             self.config_widgets[f"{section}_{i}_{config_key}"] = lineEdit
                             
                         row += 1
+
+                        # Si se han añadido 12 widgets, reinicia el contador de filas y pasa a la siguiente columna
+                        if row >= 12:
+                            row = 0
+                            col += 2
+
+                            # If there are more than 12 modules, insert a vertical line to separate the columns
+                            line = QFrame()
+                            line.setFrameShape(QFrame.VLine)
+                            line.setFrameShadow(QFrame.Sunken)
+                            grid_layout.addWidget(line, 0, col*4 - 1, 12, 1)  # The line spans 12 rows
 
                 group_box.setLayout(grid_layout)
                 self.layout.addWidget(group_box)

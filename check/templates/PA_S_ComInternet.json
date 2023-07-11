@@ -1,0 +1,44 @@
+{
+    "low": [
+        {
+            "Desactivar el acceso a Store": "No Configurado",
+            "Desactivar el contenido ¿Sabía que del Centro de ayuda y soporte técnico": "No Configurado",
+            "Desactivar el informe de errores de Windows": "No Configurado",
+            "Desactivar el Programa para la mejora de la experiencia del usuario de Windows": "No Configurado",
+            "Desactivar informe de errores de reconocimiento de escritura a mano": "No Configurado",
+            "Desactivar la actualización de archivos de contenido del Asistente para búsqueda": "No Configurado",
+            "Desactivar la búsqueda en Microsoft Knowledge Base del Centro de ayuda y soporte técnico": "No Configurado",
+            "Desactivar la tarea de imágenes Pedir copias fotográficas": "No Configurado",
+            "Desactivar los vínculos Eventsasp del Visor de eventos": "No Configurado",
+            "Desactivar uso compartido de datos de personalización de escritura a mano": "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar el acceso a Store": "Habilitado",
+            "Desactivar el contenido ¿Sabía que del Centro de ayuda y soporte técnico": "Habilitado",
+            "Desactivar el informe de errores de Windows": "Habilitado",
+            "Desactivar el Programa para la mejora de la experiencia del usuario de Windows": "Habilitado",
+            "Desactivar informe de errores de reconocimiento de escritura a mano": "Habilitado",
+            "Desactivar la actualización de archivos de contenido del Asistente para búsqueda": "Habilitado",
+            "Desactivar la búsqueda en Microsoft Knowledge Base del Centro de ayuda y soporte técnico": "Habilitado",
+            "Desactivar la tarea de imágenes Pedir copias fotográficas": "Habilitado",
+            "Desactivar los vínculos Eventsasp del Visor de eventos": "Habilitado",
+            "Desactivar uso compartido de datos de personalización de escritura a mano": "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar el acceso a Store": "Habilitado",
+            "Desactivar el contenido ¿Sabía que del Centro de ayuda y soporte técnico": "Habilitado",
+            "Desactivar el informe de errores de Windows": "Habilitado",
+            "Desactivar el Programa para la mejora de la experiencia del usuario de Windows": "Habilitado",
+            "Desactivar informe de errores de reconocimiento de escritura a mano": "Habilitado",
+            "Desactivar la actualización de archivos de contenido del Asistente para búsqueda": "Habilitado",
+            "Desactivar la búsqueda en Microsoft Knowledge Base del Centro de ayuda y soporte técnico": "Habilitado",
+            "Desactivar la tarea de imágenes Pedir copias fotográficas": "Habilitado",
+            "Desactivar los vínculos Eventsasp del Visor de eventos": "Habilitado",
+            "Desactivar uso compartido de datos de personalización de escritura a mano": "Habilitado"
+        }
+    ]
+}

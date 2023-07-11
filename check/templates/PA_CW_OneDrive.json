@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Impedir el uso de OneDrive para almacenar archivos" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "Impedir el uso de OneDrive para almacenar archivos" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Impedir el uso de OneDrive para almacenar archivos" : "Habilitado"
+        }
+    ]
+}

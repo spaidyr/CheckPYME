@@ -1,0 +1,23 @@
+{
+    "low": [
+        {
+            "Administración del usuario del uso compartido de nombre de usuario imagen de cuenta e información de dominio con aplicaciones que no sean aplicaciones de escritorio": "Habilitado",
+            "Administración del usuario - Acción": "Siempre desactivado",
+            "Desactivar el identificador de publicidad": "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Administración del usuario del uso compartido de nombre de usuario imagen de cuenta e información de dominio con aplicaciones que no sean aplicaciones de escritorio": "Habilitado",
+            "Administración del usuario - Acción": "Siempre activado",
+            "Desactivar el identificador de publicidad": "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Administración del usuario del uso compartido de nombre de usuario imagen de cuenta e información de dominio con aplicaciones que no sean aplicaciones de escritorio": "Habilitado",
+            "Administración del usuario - Acción": "Siempre activado",
+            "Desactivar el identificador de publicidad": "Habilitado"
+        }
+    ]
+}

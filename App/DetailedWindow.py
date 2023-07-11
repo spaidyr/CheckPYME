@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QDialog, QTableWidget, QTableWidgetItem, QGridLayout
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QDialog, QTableWidget, QTableWidgetItem, QGridLayout, QSizePolicy
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from handler.function import get_policie as get_policie
@@ -52,7 +52,7 @@ class DetailedWindow(QDialog):
         de seguridad.
         """
         self.setWindowTitle(f'{self.module_key} on {self.hostname}')
-        self.setGeometry(1100, 100, 307, 400)
+        #self.setGeometry(1100, 100, 307, 400)
 
         vbox = QVBoxLayout()
         policies = get_policie(self.hostname, self.module_key)
@@ -89,17 +89,31 @@ class DetailedWindow(QDialog):
             table.setItem(i, 0, key_item)
             table.setItem(i, 1, value_item)
 
+        # Autoajusta las columnas y filas de la tabla
+        table.resizeColumnsToContents()
+        table.resizeRowsToContents()
+
+        # Permite que la ventana de diálogo se redimensione para adaptarse a su contenido
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
         vbox.addWidget(table)
 
         # Crea el layout para las tres columnas y dos filas
         grid_Title = QGridLayout()
         grid_layout = QGridLayout()
 
+        # Establece la distancia entre las columnas
+        grid_layout.setColumnStretch(0, 1)
+        grid_layout.setColumnStretch(1, 1)
+        grid_layout.setColumnStretch(2, 1)
+
         # Agrega etiquetas con los nombres en la primera fila
         label1 = QLabel("LOW")
         label2 = QLabel("MEDIUM")
         label3 = QLabel("HIGH")
-        texto = QLabel("Porcentaje de Cumplimiento con los\nniveles de seguridad de las Guias STIC")
+        texto = QLabel("Porcentaje de Cumplimiento con los\nniveles de seguridad de las Guias de Configuración Segura")
+        texto.setAlignment(Qt.AlignCenter)
+        texto.setStyleSheet("text-align: justify;")
 
         booleans_low = get_booleans(self.hostname, self.module_key, security_level="low")
         booleans_medium = get_booleans(self.hostname, self.module_key, security_level="medium")
@@ -108,6 +122,14 @@ class DetailedWindow(QDialog):
         percent_low = QLabel(f"{self.__get_true_percentage(booleans_low):.2f}%")
         percent_medium = QLabel(f"{self.__get_true_percentage(booleans_medium):.2f}%")
         percent_high = QLabel(f"{self.__get_true_percentage(booleans_high):.2f}%")
+
+        # Alinea los textos al centro
+        label1.setAlignment(Qt.AlignCenter)
+        label2.setAlignment(Qt.AlignCenter)
+        label3.setAlignment(Qt.AlignCenter)
+        percent_low.setAlignment(Qt.AlignCenter)
+        percent_medium.setAlignment(Qt.AlignCenter)
+        percent_high.setAlignment(Qt.AlignCenter)
 
         # Agrega widgets a las celdas del layout
         grid_Title.addWidget(texto, 0, 0)
@@ -119,12 +141,30 @@ class DetailedWindow(QDialog):
         grid_layout.addWidget(percent_high, 1, 2)  
 
         grid_Title.setAlignment(Qt.AlignCenter)
+        grid_layout.setAlignment(Qt.AlignCenter)  # Alinea el layout al centro
 
         # Agrega el grid layout al layout principal
         vbox.addLayout(grid_Title)
         vbox.addLayout(grid_layout)
 
         self.setLayout(vbox)
+        
+        # Cálculo del tamaño total de la tabla y establecimiento del tamaño de la ventana
+        table_width = table.verticalHeader().width() + 12  # for the margins
+        for i in range(table.columnCount()):
+            table_width += table.columnWidth(i)
+
+        table_height = table.horizontalHeader().height() + 65
+        for i in range(table.rowCount()):
+            table_height += table.rowHeight(i)
+
+        # Agregar un margen para el título de la ventana y los bordes
+        window_margin = 30  
+        self.resize(table_width + window_margin, table_height + window_margin)
+
+        # Limitar la altura y anchura máxima de la ventana
+        self.setMaximumHeight(800)
+        self.setMaximumWidth(1200)
 
     def __get_true_percentage(self, count_dict):
         """

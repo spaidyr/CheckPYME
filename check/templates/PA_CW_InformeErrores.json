@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "Deshabilitar el informe de errores de Windows" : "Habilitado",
+            "No enviar datos adicionales" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "Deshabilitar el informe de errores de Windows" : "Habilitado",
+            "No enviar datos adicionales" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Deshabilitar el informe de errores de Windows" : "Habilitado",
+            "No enviar datos adicionales" : "Habilitado"
+        }
+    ]
+}

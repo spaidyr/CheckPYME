@@ -377,7 +377,7 @@ def get_booleans_security(hostname, security_level):
     Devuelve:
         dict: Un diccionario de los contadores de booleanos.
     """
-    config = socket_handler.config
+    config = socket_handler.read_config()
     modules = config['modules']
 
     counters = { True:0, False:0}
@@ -458,4 +458,4 @@ def get_config():
     Devuelve:
         dict: La configuración del gestor de sockets.
     """
-    return socket_handler.config
+    return socket_handler.read_config()

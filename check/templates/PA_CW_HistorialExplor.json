@@ -1,0 +1,44 @@
+{
+    "low": [
+        {
+            "Evitar la eliminación de datos de filtrado ActiveX, protección de rastreo y No realizar seguimiento" : "Deshabilitado",
+            "Impedir que se elimine el historial de descarga" : "Deshabilitado",
+            "Impedir que se eliminen contraseñas" : "Deshabilitado",
+            "Impedir que se eliminen cookies" : "Deshabilitado",
+            "Impedir que se eliminen datos del sitio de favoritos" : "Deshabilitado",
+            "Impedir que se eliminen los archivos temporales de Internet" : "Deshabilitado",
+            "Impedir que se eliminen los datos de filtrado InPrivate" : "Deshabilitado",
+            "Impedir que se eliminen los datos de formularios" : "Deshabilitado",
+            "Impedir que se eliminen los sitios web que el usuario visitó" : "Deshabilitado",
+            "Permitir que se elimine el historial de exploración al salir" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "Evitar la eliminación de datos de filtrado ActiveX, protección de rastreo y No realizar seguimiento" : "Deshabilitado",
+            "Impedir que se elimine el historial de descarga" : "Deshabilitado",
+            "Impedir que se eliminen contraseñas" : "Deshabilitado",
+            "Impedir que se eliminen cookies" : "Deshabilitado",
+            "Impedir que se eliminen datos del sitio de favoritos" : "Deshabilitado",
+            "Impedir que se eliminen los archivos temporales de Internet" : "Deshabilitado",
+            "Impedir que se eliminen los datos de filtrado InPrivate" : "Deshabilitado",
+            "Impedir que se eliminen los datos de formularios" : "Deshabilitado",
+            "Impedir que se eliminen los sitios web que el usuario visitó" : "Deshabilitado",
+            "Permitir que se elimine el historial de exploración al salir" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Evitar la eliminación de datos de filtrado ActiveX, protección de rastreo y No realizar seguimiento" : "Deshabilitado",
+            "Impedir que se elimine el historial de descarga" : "Deshabilitado",
+            "Impedir que se eliminen contraseñas" : "Deshabilitado",
+            "Impedir que se eliminen cookies" : "Deshabilitado",
+            "Impedir que se eliminen datos del sitio de favoritos" : "Deshabilitado",
+            "Impedir que se eliminen los archivos temporales de Internet" : "Deshabilitado",
+            "Impedir que se eliminen los datos de filtrado InPrivate" : "Deshabilitado",
+            "Impedir que se eliminen los datos de formularios" : "Deshabilitado",
+            "Impedir que se eliminen los sitios web que el usuario visitó" : "Deshabilitado",
+            "Permitir que se elimine el historial de exploración al salir" : "Habilitado"
+        }
+    ]
+}

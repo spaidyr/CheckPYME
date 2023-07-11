@@ -33,7 +33,7 @@ class MyApp(QMainWindow):
     Métodos:
         initUI(): Este método inicializa la interfaz de usuario.
         closeEvent(event): Este método maneja el evento de cierre de la aplicación.
-        color_compliance_cells(): Este método colorea las celdas de la columna 'Compliance STICS'.
+        color_compliance_cells(): Este método colorea las celdas de la columna 'Compliance Guides'.
         open_host_policie_window(row, column): Este método abre la ventana de políticas del host cuando se hace clic en una celda.
         quit(): Este método cierra la aplicación.
     """
@@ -74,7 +74,7 @@ class MyApp(QMainWindow):
         los agrega a la ventana principal. También se conectan las señales y los slots para manejar los eventos de usuario.
         """
         self.setWindowTitle("CheckPYME")  # Set the window title
-        self.setGeometry(100, 100, 865, 600) # Establece la ventana en la posición (100, 100) y con tamaño 800px de ancho y 600px de alto
+        self.setGeometry(100, 100, 880, 600) # Establece la ventana en la posición (100, 100) y con tamaño 800px de ancho y 600px de alto
         
         menubar = self.menuBar()
 
@@ -107,7 +107,7 @@ class MyApp(QMainWindow):
 
         # Configure table widget
         self.tableWidget.setColumnCount(7) # 7 columns for Hostname, IP_Address, Online and Updated
-        self.tableWidget.setHorizontalHeaderLabels(['Hostname', 'IP_Address', 'Online', 'last_check', 'last_update', 'Compliance STIC', 'Compliance Custom'])
+        self.tableWidget.setHorizontalHeaderLabels(['Hostname', 'IP_Address', 'Online', 'last_check', 'last_update', 'Compliance Guides', 'Compliance Custom'])
         self.tableWidget.setColumnWidth(0, 150)
         self.tableWidget.setColumnWidth(2, 50)
         self.tableWidget.setColumnWidth(3, 115)
@@ -122,6 +122,7 @@ class MyApp(QMainWindow):
         centralWidget = QWidget()
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
+        self.setMaximumHeight(800)
 
         time.sleep(1)
 

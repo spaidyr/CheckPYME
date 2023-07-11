@@ -1,0 +1,23 @@
+{
+    "low": [
+        {
+            "Desactivar scripting de ubicación" : "Habilitado",
+            "Desactivar sensores" : "Habilitado",
+            "Desactivar ubicación" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar scripting de ubicación" : "Habilitado",
+            "Desactivar sensores" : "Habilitado",
+            "Desactivar ubicación" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar scripting de ubicación" : "Habilitado",
+            "Desactivar sensores" : "Habilitado",
+            "Desactivar ubicación" : "Habilitado"
+        }
+    ]
+}

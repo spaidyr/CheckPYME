@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "Desactivar la aplicación Store" : "No Configurado",
+            "Deshabilitar todas las aplicaciones de Microsoft Store " : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar la aplicación Store" : "Habilitado",
+            "Deshabilitar todas las aplicaciones de Microsoft Store " : "Deshabilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar la aplicación Store" : "Habilitado",
+            "Deshabilitar todas las aplicaciones de Microsoft Store " : "Deshabilitado"
+        }
+    ]
+}

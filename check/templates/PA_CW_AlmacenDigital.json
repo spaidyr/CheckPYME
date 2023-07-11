@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "No permitir que se ejecute el Almacén digital" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "No permitir que se ejecute el Almacén digital" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "No permitir que se ejecute el Almacén digital" : "Habilitado"
+        }
+    ]
+}

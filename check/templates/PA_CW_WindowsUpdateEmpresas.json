@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "Administrar compilaciones preliminares" : "Habilitado",
+            "Seleccione el nivel de preparación de Windows para obtener las actualizaciones que desea recibir:" : "Versión preliminar de actualizaciones de calidad únicamente"
+        }
+    ],
+    "medium": [
+        {
+            "Administrar compilaciones preliminares" : "Habilitado",
+            "Seleccione el nivel de preparación de Windows para obtener las actualizaciones que desea recibir:" : "Versión preliminar de actualizaciones de calidad únicamente"
+        }
+    ],
+    "high": [
+        {
+            "Administrar compilaciones preliminares" : "Habilitado",
+            "Seleccione el nivel de preparación de Windows para obtener las actualizaciones que desea recibir:" : "Versión preliminar de actualizaciones de calidad únicamente"
+        }
+    ]
+}

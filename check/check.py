@@ -43,7 +43,7 @@ def __read_template(policie):
     dict
         Un diccionario que representa la plantilla JSON correspondiente a la política.
     """
-    with open(os.path.join(TEMPLATE_PATH, f'{policie}.json'), "r") as f:
+    with open(os.path.join(TEMPLATE_PATH, f'{policie}.json'), "r", encoding='utf-8') as f:
         return json.load(f)
 
 def __import_policie_module(policie, doc_file, template):

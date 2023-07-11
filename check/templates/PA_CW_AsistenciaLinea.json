@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Desactivar la ayuda activa" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar la ayuda activa" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar la ayuda activa" : "Habilitado"
+        }
+    ]
+}

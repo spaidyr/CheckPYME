@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "Desactivar experiencias del consumidor de Microsoft" : "Habilitado",
+            "No mostrar recomendaciones de Windows" : "Habilitado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar experiencias del consumidor de Microsoft" : "Habilitado",
+            "No mostrar recomendaciones de Windows" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar experiencias del consumidor de Microsoft" : "Habilitado",
+            "No mostrar recomendaciones de Windows" : "Habilitado"
+        }
+    ]
+}

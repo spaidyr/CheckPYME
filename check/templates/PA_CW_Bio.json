@@ -1,0 +1,23 @@
+{
+    "low": [
+        {
+            "Permitir el uso de biometría" : "No Configurado",
+            "Permitir que los usuarios de dominio inicien sesión mediante biometría" : "No Configurado",
+            "Permitir que los usuarios inicien sesión mediante biometría" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Permitir el uso de biometría" : "Habilitado",
+            "Permitir que los usuarios de dominio inicien sesión mediante biometría" : "Habilitado",
+            "Permitir que los usuarios inicien sesión mediante biometría" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Permitir el uso de biometría" : "Habilitado",
+            "Permitir que los usuarios de dominio inicien sesión mediante biometría" : "Habilitado",
+            "Permitir que los usuarios inicien sesión mediante biometría" : "Habilitado"
+        }
+    ]
+}

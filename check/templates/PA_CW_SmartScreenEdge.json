@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Configurar SmartScreen de Windows Defender" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Configurar SmartScreen de Windows Defender" : "Deshabilitado"
+        }
+    ],
+    "high": [
+        {
+            "Configurar SmartScreen de Windows Defender" : "No Configurado"
+        }
+    ]
+}

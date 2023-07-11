@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Desactivar el aprendizaje automático" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar el aprendizaje automático" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar el aprendizaje automático" : "Habilitado"
+        }
+    ]
+}

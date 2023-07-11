@@ -1,0 +1,20 @@
+{
+    "low": [
+        {
+            "Modo de descarga" : "No Configurado",
+            "Modo de descarga:" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Modo de descarga" : "Habilitado",
+            "Modo de descarga:" : "Solo HTTP (0)"
+        }
+    ],
+    "high": [
+        {
+            "Modo de descarga" : "Habilitado",
+            "Modo de descarga:" : "Solo HTTP (0)"
+        }
+    ]
+}

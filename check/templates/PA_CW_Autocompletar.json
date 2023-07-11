@@ -1,0 +1,17 @@
+{
+    "low": [
+        {
+            "Desactivar las sugerencias de direcciones URL" : "No Configurado"
+        }
+    ],
+    "medium": [
+        {
+            "Desactivar las sugerencias de direcciones URL" : "Habilitado"
+        }
+    ],
+    "high": [
+        {
+            "Desactivar las sugerencias de direcciones URL" : "Habilitado"
+        }
+    ]
+}

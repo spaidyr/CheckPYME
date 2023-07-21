@@ -212,6 +212,9 @@ class HostPolicieWindow(QDialog):
             module_item = self.table.item(row, column - 1) # Obtiene el módulo de la columna anterior
             module_key = module_item.text() if module_item else ''
             value = self.table.item(row, column)
-            if value.text():
-                detailed_window = DetailedWindow(self.hostname, module_key)
-                detailed_window.exec_()
+            try:
+                if value.text():
+                    detailed_window = DetailedWindow(self.hostname, module_key)
+                    detailed_window.exec_()
+            except:
+                pass

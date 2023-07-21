@@ -17,7 +17,8 @@ class AA_Init_Files():
 
     def check(self):
         
-        self.run_SecPol()        
+        self.run_SecPol()
+        self.run_GpResult()
 
     # Función para ejecutar el comando de powershell con privilegios de administrador
     def run_SecPol(self):
@@ -54,7 +55,8 @@ class AA_Init_Files():
             os.makedirs('C:\\temp')
 
         # Comando de PowerShell
-        command = "cd C: ; cd temp ; del .\report.html ; gpresult /h report.html"
+        #command = "cd C: ; cd temp ; del .\report.html ; gpresult /h report.html"
+        command = "cd C: ; cd temp ; gpresult /h report.html"
 
         # Opciones para ocultar la ventana de la consola
         startupinfo = subprocess.STARTUPINFO()

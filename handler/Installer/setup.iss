@@ -75,6 +75,7 @@ Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install cr
 Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install elasticsearch==8.8.0"; StatusMsg: "Instalando la biblioteca elasticsearch..."; Flags: runhidden
 Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install importlib==1.0.4"; StatusMsg: "Instalando la biblioteca importlib..."; Flags: runhidden
 Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install pytz==2023.3"; StatusMsg: "Instalando la biblioteca pytz..."; Flags: runhidden
+Filename: "C:\Program Files\Python39\python.exe"; Parameters: "-m pip install bs4==0.0.1"; StatusMsg: "Instalando la biblioteca pytz..."; Flags: runhidden
 
 ; Ejecuta la aplicacion
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent

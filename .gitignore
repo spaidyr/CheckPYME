@@ -163,7 +163,8 @@ cython_debug/
 sqlite/*.db
 certs/*/*.crt
 certs/*/*.key
-Agent/certs/*
+Agent/certs/*.key
+Agent/certs/*.crt
 Agent/elk_credentials.txt
 Agent/modules/*.py
 Agent_Installer/*

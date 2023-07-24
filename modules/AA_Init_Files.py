@@ -51,12 +51,14 @@ class AA_Init_Files():
     def run_GpResult(self):
 
         # Crear la carpeta temp si no existe
-        if not os.path.exists('C:\\temp'):
-            os.makedirs('C:\\temp')
+        if not os.path.exists(r'C:\temp'):
+            os.makedirs(r'C:\temp')
 
         # Comando de PowerShell
+        command = r"cd c:\temp ; gpresult /h report.html /f"
+        # Comando de PowerShell
         #command = "cd C: ; cd temp ; del .\report.html ; gpresult /h report.html"
-        command = "cd C: ; cd temp ; gpresult /h report.html"
+        #command = "cd c:\temp ; gpresult /h report.html"
 
         # Opciones para ocultar la ventana de la consola
         startupinfo = subprocess.STARTUPINFO()
@@ -71,7 +73,12 @@ class AA_Init_Files():
                                         stdout=subprocess.PIPE, 
                                         stderr=subprocess.PIPE, 
                                         shell=False, startupinfo=startupinfo
-                                        ).communicate()
+                                        )
 #            process.communicate()
+            stdout, stderr = process.communicate()
+            if stdout:
+                print("STDOUT:{}".format(stdout))
+            if stderr:
+                print("STDERR:{}".format(stderr))
         except subprocess.CalledProcessError as e:
             print(f"Hubo un problema al ejecutar el script de PowerShell: {str(e)}")

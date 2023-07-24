@@ -4,11 +4,11 @@ import platform
 import pytz
 
 
-class AA_Init_Files():
+class ZZ_Del_Files():
 
     def __init__(self) -> dict:
         self.result = {}
-        name = 'AA_Init_Files'
+        name = 'ZZ_Del_Files'
         self.result['module_name'] = name
         self.result['hostname'] = platform.node()
         madrid_tz = pytz.timezone('Europe/Madrid')
